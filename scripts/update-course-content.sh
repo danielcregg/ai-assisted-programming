@@ -88,10 +88,11 @@ fi
 # 3.2, which has no mapfile, and this script is also run by hand on laptops.
 COURSE_RE='^(README\.md|AGENTS\.md|CLAUDE\.md|lectures-and-labs/.*|mcq/.*|module/.*|\.devcontainer/.*|\.vscode/.*)$'
 # The course-owned PAGES a retirement upstream may remove here (see the pass
-# below): the lectures, the guide and the week explainers under
+# below): the lectures (a Marp deck, or a PowerPoint deck with its exported
+# .pdf and .notes.md), the guide and the week explainers under
 # lectures-and-labs/, and everything under mcq/ and module/. Never a lab
 # folder: those hold your own code.
-RETIRE_RE='^(lectures-and-labs/(README\.md|[^/]+/([^/]+-lecture\.md|README\.md))|mcq/.*|module/.*)$'
+RETIRE_RE='^(lectures-and-labs/(README\.md|[^/]+/([^/]+-lecture\.(md|notes\.md|pptx|pdf)|README\.md))|mcq/.*|module/.*)$'
 PATHS=()
 while IFS= read -r p; do
   [ -n "$p" ] && PATHS+=("$p")

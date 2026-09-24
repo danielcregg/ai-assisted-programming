@@ -237,6 +237,9 @@ def lecture_row(row: Row, title: str) -> str:
     t = html.escape(title)
     lab = (f'      <a class="open" href="labs/{row.lab}/"'
            f' aria-label="Week {row.week}: {t} — lab">lab</a>\n') if row.lab else ""
+    pptx = (f'      <a class="dl" href="{row.deck}/slides.pptx"'
+            f' aria-label="Week {row.week}: {t} — download the PowerPoint">pptx</a>\n'
+            ) if row.is_pptx else ""
     return (f'  <li class="row lecture" data-index="{row.index}">\n'
             f'    <span class="num" data-week="{row.week}" aria-hidden="true">{row.week}</span>\n'
             f'    <span class="topic"><a href="{row.deck}/index.html">{t}</a></span>\n'
@@ -246,6 +249,7 @@ def lecture_row(row: Row, title: str) -> str:
             f'{lab}'
             f'      <a class="dl" href="{row.deck}/slides.pdf"'
             f' aria-label="Week {row.week}: {t} — download the PDF">pdf</a>\n'
+            f'{pptx}'
             f'    </span>\n'
             f'  </li>\n')
 
@@ -269,7 +273,7 @@ def build_rows(sched: Schedule) -> tuple[str, int, int]:
     rows, lectures, markers = [], 0, 0
     for row in sched.rows:
         if row.deck:
-            deck = row.lecture
+            deck = row.lecture_text      # a PowerPoint deck's title is in its text copy
             if not deck.is_file():
                 raise SystemExit(f"build_index: week {row.week} names {deck.as_posix()}, "
                                  f"which does not exist (check_schedule.py catches this first).")

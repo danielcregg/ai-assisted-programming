@@ -74,7 +74,9 @@ def table_row(row: Row, current: Row | None, links: tuple[str, str] = FROM_ROOT)
     if current is not None and row.index == current.index:
         week = f"**➡️ {week}**"
     if row.deck:
-        lecture = f"[slides]({folder}{row.dir}/{row.lecture.name})"
+        # A PowerPoint lecture links its exported PDF, which GitHub shows in the page.
+        slides = row.lecture_pdf if row.is_pptx else row.lecture
+        lecture = f"[slides]({folder}{row.dir}/{slides.name})"
         if row.lab:
             lab = f"[lab]({folder}{row.dir}/{row.lab_folder}/README.md)"
         else:

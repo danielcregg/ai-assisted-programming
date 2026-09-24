@@ -105,10 +105,12 @@ def check(deck: Path, identity_only: bool = False) -> list[str]:
 def main() -> int:
     if not ROOT.is_dir():
         return 0
-    decks = sorted(ROOT.glob("*/*-lecture.md"))
+    # A PowerPoint deck is checked through its generated text copy: every
+    # slide's text and speaker notes (scripts/export_decks.py).
+    decks = sorted([*ROOT.glob("*/*-lecture.md"), *ROOT.glob("*/*-lecture.notes.md")])
     findings = []
     for deck in decks:
-        findings.extend(check(deck, identity_only=(deck.name == f"{INTRO}-lecture.md")))
+        findings.extend(check(deck, identity_only=deck.name.startswith(f"{INTRO}-lecture.")))
 
     for line in findings:
         print(line)

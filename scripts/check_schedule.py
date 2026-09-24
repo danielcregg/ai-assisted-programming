@@ -7,10 +7,14 @@ Fails (exit 1, every finding listed) when:
     the reading week, a lecture row with no topic;
   - a row's folder under lectures-and-labs/ (named from its week number) is
     missing, or does not hold what the row promises: a teaching week holds
-    exactly one lecture, <deck>-lecture.md for that deck (its frontmatter
-    `topic` is the deck); a lab week also holds <lab>_lab/ with README.md,
-    no other folder, and no README.md at week level; an MCQ week and the
-    reading week hold README.md, titled without a week number;
+    exactly one lecture, <deck>-lecture.md or <deck>-lecture.pptx for that
+    deck (its frontmatter `topic` is the deck); a lab week also holds
+    <lab>_lab/ with README.md, no other folder, and no README.md at week
+    level; an MCQ week and the reading week hold README.md, titled without a
+    week number;
+  - a PowerPoint lecture's exported PDF and text copy are missing or stale
+    (the deck saved since, or the text copy edited by hand; see
+    scripts/export_decks.py), or an export sits beside no PowerPoint deck;
   - a tracked file under lectures-and-labs/ belongs to no schedule row, or
     anything is tracked under the retired lectures/ or labs/ layout, or an
     mcq/ folder is claimed by no row;
@@ -34,8 +38,11 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from schedule import MCQ, ROOT, load  # noqa: E402
+from schedule import MCQ, ROOT, load, stale_exports  # noqa: E402
 import update_current_week  # noqa: E402
+
+LECTURE_ENDINGS = ("-lecture.md", "-lecture.pptx")
+EXPORT_ENDINGS = ("-lecture.pdf", "-lecture.notes.md")
 
 OVERVIEW = Path("module/module-overview.md")
 VSCODE = Path(".vscode/settings.json")
@@ -94,7 +101,9 @@ def main() -> None:
             findings.append(f"week {r.week}: {d.as_posix()}/ does not exist")
             continue
         lectures = sorted(p.name for p in d.iterdir()
-                          if p.is_file() and p.name.endswith("-lecture.md"))
+                          if p.is_file() and p.name.endswith(LECTURE_ENDINGS))
+        exports = sorted(p.name for p in d.iterdir()
+                         if p.is_file() and p.name.endswith(EXPORT_ENDINGS))
         # Local caches (__pycache__, .pytest_cache) are not part of the shape.
         subdirs = sorted(p.name for p in d.iterdir()
                          if p.is_dir() and p.name != "img"
@@ -103,19 +112,29 @@ def main() -> None:
         if r.deck:
             if not r.topic:
                 findings.append(f"week {r.week}: a lecture row needs a topic")
+            stale = stale_exports(r) if r.lecture.is_file() else []
             if not r.lecture.is_file():
                 findings.append(f"week {r.week}: {r.lecture.as_posix()} does not exist")
+            elif stale:
+                findings.append(f"week {r.week}: {'; '.join(stale)}: run python "
+                                f"scripts/export_decks.py (Windows, with PowerPoint, the deck "
+                                f"closed) and commit the .pdf and .notes.md it writes")
             else:
-                topic = frontmatter_topic(r.lecture.read_text(encoding="utf-8"))
+                topic = frontmatter_topic(r.lecture_text.read_text(encoding="utf-8"))
                 if topic != r.deck:
-                    findings.append(f"week {r.week}: {r.lecture.as_posix()} is the {topic!r} "
+                    findings.append(f"week {r.week}: {r.lecture_text.as_posix()} is the {topic!r} "
                                     f"lecture, but the schedule names {r.deck!r}")
             extra = [n for n in lectures if n != r.lecture.name]
             if extra:
                 findings.append(f"week {r.week}: {d.as_posix()}/ also holds {extra}; "
                                 f"the lecture is {r.lecture.name}")
-        elif lectures:
-            findings.append(f"week {r.week}: {d.as_posix()}/ holds {lectures}, but the "
+            ours = {r.lecture_pdf.name, r.lecture_text.name} if r.is_pptx else set()
+            stray = [n for n in exports if n not in ours]
+            if stray:
+                findings.append(f"week {r.week}: {d.as_posix()}/ holds {stray}, exports of no "
+                                f"PowerPoint deck there; delete them")
+        elif lectures or exports:
+            findings.append(f"week {r.week}: {d.as_posix()}/ holds {lectures + exports}, but the "
                             f"schedule has no lecture this week")
 
         if r.lab:
@@ -163,7 +182,7 @@ def main() -> None:
             if d not in claimed:
                 findings.append(f"mcq/{d}/ is not in module/schedule.json")
 
-    for deck in sorted(ROOT.glob("*/*-lecture.md")):
+    for deck in sorted([*ROOT.glob("*/*-lecture.md"), *ROOT.glob("*/*-lecture.notes.md")]):
         text = deck.read_text(encoding="utf-8")
         if re.search(r"(?m)^week:", text):
             findings.append(f"{deck.as_posix()}: frontmatter must not declare week: "

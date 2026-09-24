@@ -11,8 +11,10 @@ warning go away.
 
 Checks:
   1. tracked-file extensions -- no spreadsheet/archive/compiled-binary
-     extensions, and no .pptx at all: lecture decks are Marp markdown here,
-     so a tracked PowerPoint means a conversion was skipped.
+     extensions, and no .pptx except a week's lecture deck
+     (lectures-and-labs/weekNN/<topic>-lecture.pptx), which check_schedule
+     binds to its exported PDF and text copy. Checks 3 and 4 read inside
+     that deck, not its compressed bytes.
   2. env files -- `.env.example` is the ONLY env file that may be tracked.
      One lab (rag) needs a live API key that students supply themselves,
      so a real .env reaching a public repo is this module's single most
@@ -38,16 +40,19 @@ from __future__ import annotations
 import re
 import subprocess
 import sys
+import zipfile
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
 # Check 1: tracked-file extensions that must never be committed.
-#   pptx: decks are markdown in this repo. A tracked PowerPoint is a deck
-#   that never got converted, and it is opaque to every other gate.
+#   pptx: a stray PowerPoint (an old 2025 deck, a worksheet) is opaque to
+#   every other gate. The one exception is a week's lecture deck, whose
+#   text copy the gates read and check_schedule binds to it by hash.
 #   mbz/zip: Moodle course backups carry student data.
 BAD_EXTENSION_RE = re.compile(
     r"\.(xlsx|xls|mbz|zip|class|jar|pptx|ppt|docx|doc|pem|key|p12|pfx)$",
     re.IGNORECASE)
+LECTURE_DECK_RE = re.compile(r"^lectures-and-labs/week\d\d/[a-z0-9-]+-lecture\.pptx$")
 
 # ---------------------------------------------------------------------------
 # Check 2: env files. .env.example ships (it documents which variables a lab
@@ -89,7 +94,7 @@ CREDENTIAL_PATTERNS = {
 # span-containment before a match is flagged.
 TEXT_SCAN_GLOBS = ("*.md", "*.yml", "*.yaml", "*.py", "*.html", "*.xml",
                    "*.json", "*.txt", "*.js", "*.ts", "*.tsx", "*.jsx",
-                   "*.sh", "*.toml", "*.cfg", "*.ini", "*.env.example")
+                   "*.sh", "*.toml", "*.cfg", "*.ini", "*.env.example", "*.pptx")
 SENSITIVE_RE = re.compile(r"assignsubmission|G00[0-9]{6}|\b[0-9a-f]{32}\b",
                           re.IGNORECASE)
 
@@ -162,15 +167,39 @@ def scan_text_for_leaks(text: str) -> list[tuple[int, str]]:
 
 
 def read_text_relaxed(path: Path) -> str:
+    if path.suffix.lower() == ".pptx":
+        return pptx_text(path)
     try:
         return path.read_text(encoding="utf-8")
     except UnicodeDecodeError:
         return path.read_text(encoding="utf-8", errors="ignore")
 
 
+def pptx_text(path: Path) -> str:
+    """Every XML part of a PowerPoint deck, decompressed, each after a line naming it.
+
+    As raw bytes a .pptx is a zip archive, and a key typed into a speaker note
+    or a hidden text box sits in a compressed part no pattern can see. The
+    parts hold every slide, note, comment, alt text and link as plain text.
+    A file that is not a zip archive reads as nothing here; check 1 reports it."""
+    try:
+        with zipfile.ZipFile(path) as z:
+            return "\n".join(f"[{name}]\n" + z.read(name).decode("utf-8", errors="ignore")
+                             for name in z.namelist() if name.endswith((".xml", ".rels")))
+    except zipfile.BadZipFile:
+        return ""
+
+
 def check_bad_extensions() -> list[str]:
-    return [f"{p}: disallowed tracked extension"
-            for p in git_ls_files() if BAD_EXTENSION_RE.search(p)]
+    findings = []
+    for p in git_ls_files():
+        if LECTURE_DECK_RE.match(p):
+            if Path(p).is_file() and not zipfile.is_zipfile(p):
+                findings.append(f"{p}: not a PowerPoint file (no zip archive inside), so "
+                                f"checks 3 and 4 cannot read it")
+        elif BAD_EXTENSION_RE.search(p):
+            findings.append(f"{p}: disallowed tracked extension")
+    return findings
 
 
 def check_env_files() -> list[str]:

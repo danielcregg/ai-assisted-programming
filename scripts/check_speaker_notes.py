@@ -123,7 +123,9 @@ def check(deck: Path) -> list[str]:
 def main() -> int:
     if not ROOT.is_dir():
         return 0
-    decks = sorted(ROOT.glob("*/*-lecture.md"))
+    # A PowerPoint deck is checked through its generated text copy, which
+    # carries its notes in the same comments (scripts/export_decks.py).
+    decks = sorted([*ROOT.glob("*/*-lecture.md"), *ROOT.glob("*/*-lecture.notes.md")])
     findings, n_notes, n_predict = [], 0, 0
     for deck in decks:
         text = deck.read_text(encoding="utf-8")

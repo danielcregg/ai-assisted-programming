@@ -12,5 +12,6 @@
 *.png binary
 *.jpg binary
 *.pdf binary
+*.pptx binary
 *.mp4 binary
 *.wav binary

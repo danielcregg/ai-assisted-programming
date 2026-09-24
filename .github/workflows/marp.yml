@@ -103,6 +103,10 @@ jobs:
           # the site address comes from the schedule, not the folder name. PDF
           # only: Marp's pptx export wraps each slide as an image, so it offers
           # nothing the PDF doesn't, while adding ~6 MB per deck to every deploy.
+          # A PowerPoint lecture (<topic>-lecture.pptx) is not rendered: its PDF
+          # and text copy were exported on Windows and committed beside it
+          # (scripts/export_decks.py; check_schedule.py fails if they are stale),
+          # so they are published with the deck and a page built from the text.
           python scripts/render_decks.py build
           touch build/.nojekyll   # serve the output as-is; no Jekyll pass
 

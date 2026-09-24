@@ -204,7 +204,7 @@ def render(md_text: str, source: Path) -> str:
 
 
 def page(title: str, kicker_html: str, body_html: str, needs_mermaid: bool,
-         banner_html: str = "", needs_hljs: bool = False) -> str:
+         banner_html: str = "", needs_hljs: bool = False, extra_css: str = "") -> str:
     mermaid = (f'<script src="{MERMAID_JS}" integrity="{MERMAID_SRI}"'
                ' crossorigin="anonymous"></script>'
                '<script>mermaid.initialize({startOnLoad:true,theme:"neutral"});</script>'
@@ -220,7 +220,7 @@ def page(title: str, kicker_html: str, body_html: str, needs_mermaid: bool,
             if needs_hljs else "")
     return (f'<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n'
             f'<meta name="viewport" content="width=device-width, initial-scale=1">\n'
-            f'<title>{title}</title>\n<link rel="icon" href="{FAVICON}">\n{STYLE}\n'
+            f'<title>{title}</title>\n<link rel="icon" href="{FAVICON}">\n{STYLE}\n{extra_css}'
             f"</head>\n<body>\n<div class=\"wrap\">\n"
             f'<p class="kicker">{kicker_html}</p>\n{banner_html}{body_html}\n'
             f"</div>\n{hljs}{mermaid}</body>\n</html>\n")
