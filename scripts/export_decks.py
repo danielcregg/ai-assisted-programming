@@ -162,9 +162,11 @@ def code_run(text: str) -> str:
             + text[len(text.rstrip()):])
 
 
-def inline(paragraph) -> str:
+def inline(paragraph, mono=True) -> str:
     """A paragraph's runs as inline markdown: **bold**, *italic*, `code`, links.
-    A line break inside the paragraph comes back as a newline."""
+    A line break inside the paragraph comes back as a newline. mono=False reads
+    Consolas as plain text: a prompt, a table header or a "//" remark is set in
+    Consolas without being code."""
     from pptx.text.text import _Run
     lines: list[list[tuple]] = [[]]
     for el in paragraph._p:
@@ -172,12 +174,18 @@ def inline(paragraph) -> str:
             run = _Run(el, paragraph)
             link = run.hyperlink.address if el.find(f"{A}rPr/{A}hlinkClick") is not None else None
             lines[-1].append((run.text, bool(run.font.bold), bool(run.font.italic),
-                              run.font.name in MONO_FONTS, link))
+                              mono and run.font.name in MONO_FONTS, link))
         elif el.tag == A + "br":
             lines.append([])
         elif el.tag == A + "fld":
             lines[-1].append(("".join(t.text or "" for t in el.iter(A + "t")),
                               False, False, False, None))
+    # A card's label ("THEN · 2023", "HOW YOU CAN TELL") is Consolas capitals
+    # from end to end: it names the card, it is not code.
+    printed = [r for line in lines for r in line if r[0].strip()]
+    text = "".join(r[0] for r in printed)
+    if printed and all(r[3] for r in printed) and re.search(r"[A-Z]", text) and text == text.upper():
+        lines = [[(t, b, i, False, link) for t, b, i, _, link in line] for line in lines]
     return "\n".join(line_markdown(runs).strip() for runs in lines).strip()
 
 
@@ -236,7 +244,8 @@ def text_blocks(shape, slide) -> list[str]:
     heading = is_heading(shape, slide)
     blocks, items = [], []
     for paragraph in shape.text_frame.paragraphs:
-        md = inline(paragraph)
+        plain = "".join(r.text for r in paragraph.runs).strip()
+        md = escape(plain) if plain.startswith("//") else inline(paragraph)   # a "// remark"
         if not md:
             continue
         if heading:
@@ -298,11 +307,25 @@ def diagram_block(group, slide) -> str:
 
 
 def table_block(shape) -> str:
-    def cell(c):
-        return " ".join(inline(p) for p in c.text_frame.paragraphs).replace("|", "\\|").replace("\n", " ")
-    rows = [[cell(c) for c in row.cells] for row in shape.table.rows]
+    def cell(c, header=False):
+        return " ".join(inline(p, mono=not header) for p in c.text_frame.paragraphs).replace("|", "\\|").replace("\n", " ")
+    rows = [[cell(c, r == 0) for c in row.cells] for r, row in enumerate(shape.table.rows)]
     lines = ["| " + " | ".join(rows[0]) + " |", "|" + "---|" * len(rows[0])]
     return "\n".join(lines + ["| " + " | ".join(r) + " |" for r in rows[1:]])
+
+
+BOXES = ("Prompt ", "Reply ", "Callout ")
+
+
+def box_block(shape) -> str:
+    """A prompt, reply or callout box as a blockquote, its label in bold. A prompt's
+    Consolas is how it is typed, not code, so it comes back as plain text."""
+    prompt = shape.name.startswith("Prompt ")
+    labelled = shape.name.startswith(("Prompt ", "Reply "))       # PROMPT / REPLY, in Consolas
+    lines = [inline(p, mono=not (prompt or (labelled and k == 0)))
+             for k, p in enumerate(shape.text_frame.paragraphs)]
+    lines = [escape_start(line).replace("\n", chr(92) + "\n> ") for line in lines if line]
+    return "\n>\n".join("> " + line for line in lines)
 
 
 def shape_blocks(shape, slide, warnings: list[str], where: str) -> list[str]:
@@ -315,10 +338,14 @@ def shape_blocks(shape, slide, warnings: list[str], where: str) -> list[str]:
         return [code_block(shape)]
     if getattr(shape, "has_table", False) and shape.has_table:
         return [table_block(shape)]
+    if shape.has_text_frame and shape.name.startswith(BOXES):
+        return [box_block(shape)]
     if shape.has_text_frame:
         return text_blocks(shape, slide)
     if shape.shape_type == 13:                 # a picture
         return [f"*\\[Picture: {escape(descr)}\\]*" if descr else "*\\[Picture\\]*"]
+    if getattr(shape, "has_chart", False) and shape.has_chart and descr.startswith("Chart:"):
+        return [f"*\\[{escape(descr)}\\]*"]         # the builder writes the data into the alt text
     if getattr(shape, "has_chart", False) and shape.has_chart:
         return [f"*\\[Chart: {escape(descr)}\\]*" if descr else "*\\[Chart\\]*"]
     if shape._element.tag == P + "graphicFrame":
@@ -379,6 +406,12 @@ def deck_texts(deck_bytes: bytes) -> list[str]:
                             texts.append(text)
                 elif getattr(sh, "has_table", False) and sh.has_table:
                     texts.extend(c.text for row in sh.table.rows for c in row.cells)
+                else:
+                    descr = (cnvpr(sh).get("descr") or "").strip() if cnvpr(sh) is not None else ""
+                    if sh.shape_type == 13:
+                        texts.append(f"Picture: {descr}" if descr else "Picture")
+                    elif getattr(sh, "has_chart", False) and sh.has_chart:
+                        texts.append(descr if descr.startswith("Chart:") else f"Chart: {descr}")
         walk(slide.shapes)
         out.append(" ".join(texts))
     return out
