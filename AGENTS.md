@@ -291,12 +291,12 @@ cohorts.
   what another lecturer swaps) but is held to the identity rule like every
   other deck. `check_deck_portability.py` enforces both.
 
-### PowerPoint lectures (a pilot since September 2026: the overview lecture)
+### PowerPoint lectures (since September 2026: the overview and prompting lectures)
 
 A week may be taught from a PowerPoint deck instead of a Marp one,
 `<topic>-lecture.pptx` (the module owner builds them with the
-powerpoint-maker skill: the stock Office look, code in dark
-syntax-coloured boxes, every bullet revealed on click). Everything above
+powerpoint-maker skill: code in dark syntax-coloured boxes, prompts and
+replies in labelled boxes). Everything above
 about content still holds (the deck flow below, portability, notes written
 for an AI first, the misconception on every Predict slide), with the
 notes in PowerPoint's notes pane.
@@ -317,7 +317,9 @@ the deck, of the PDF and of its own text, and `check_schedule.py` fails
 when any of them stops matching: a deck saved since its export, or a text
 copy edited by hand. A code box's alt text names its language
 (`Code, python`); add `, no-parse` to exempt a deliberately incomplete
-snippet, as `<!-- no-parse -->` does above a fence. The lecture's page on
+snippet, as `<!-- no-parse -->` does above a fence. A box named
+`Prompt …`, `Reply …` or `Callout …` comes through as a quote, and a
+chart as its alt text, so write a chart's data into its alt text. The lecture's page on
 the site shows the PDF, a download of the deck, a link to Microsoft's web
 viewer (experimental: Microsoft does not support it for production use),
 and every slide's text with its notes.
