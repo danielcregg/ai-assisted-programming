@@ -19,8 +19,8 @@ happens that week.
 | Week | Topic | Lecture | Lab |
 |---|---|---|---|
 | 1 | Module Introduction | [slides](week01/introduction-lecture.md) | _No labs week 1. Labs start week 2._ |
-| **➡️ 2** | AIAP Overview | [slides](week02/overview-lecture.pdf) | [lab](week02/setup_lab/README.md) |
-| 3 | Prompting & Context Engineering | [slides](week03/prompting-lecture.pdf) | [lab](week03/prompting_lab/README.md) |
+| 2 | AIAP Overview | [slides](week02/overview-lecture.pdf) | [lab](week02/setup_lab/README.md) |
+| **➡️ 3** | Prompting & Context Engineering | [slides](week03/prompting-lecture.pdf) | [lab](week03/prompting_lab/README.md) |
 | 4 | Retrieval & Grounding | [slides](week04/rag-lecture.md) | [lab](week04/rag_lab/README.md) |
 | 5 | MCP | [slides](week05/mcp-lecture.md) | [lab](week05/mcp_lab/README.md) |
 | 6 | Coding Agents | [slides](week06/agents-lecture.md) | [lab](week06/agents_lab/README.md) |
