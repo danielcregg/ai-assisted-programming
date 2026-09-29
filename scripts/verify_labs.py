@@ -41,8 +41,9 @@ NEEDS_KEY = {
 }
 
 # Test files whose expected state is RED. Two kinds: SCAFFOLDING the student
-# replaces (prompting), and a real test that fails because the lab hands the
-# student a planted bug to fix (cli-agents, where an agent is pointed at it).
+# replaces (prompting's tests-first placeholder), and a real test that fails
+# because the lab hands the student a planted bug to fix (prompting's order
+# test, which DIY 8 debugs; cli-agents, where an agent is pointed at it).
 # Either way a normal pytest run would report the lab broken forever.
 #
 # The check is inverted instead, which turns a nuisance into a useful gate:
@@ -51,7 +52,7 @@ NEEDS_KEY = {
 # and this module's tutor brief puts no restriction on the assistant, that
 # boundary is worth watching automatically.
 PLACEHOLDER_TESTS = {
-    "prompting": ["lab/tests/test_extract_domain.py"],
+    "prompting": ["lab/tests/test_extract_domain.py", "lab/tests/test_orders.py"],
     "cli-agents": ["sample-app/test_stats.py"],
 }
 
