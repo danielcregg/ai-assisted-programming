@@ -451,9 +451,11 @@ example.
 - **Sized to two hours.** Let the exercises run to about 110 minutes
   including Codespace start-up.
 
-Labs written before this rule (prompting, agents, vibe-coding) still carry
+Labs written before this rule (agents, vibe-coding) still carry
 `REFLECTION.md` exercises; bring each into line when it is next edited,
-keeping the formula above and `check_lab_structure.py` green.
+keeping the formula above and `check_lab_structure.py` green. The
+prompting lab was rewritten to it after the setup lab, with one `check.py`
+that makes every comparison in the lab.
 
 ## Editing rules
 
@@ -509,8 +511,9 @@ Ten run on every push. Before any push, all must pass:
   syntax without live credentials, and it prints that limit on every run
   rather than letting a green tick imply otherwise.
   `PLACEHOLDER_TESTS` names test files that are *expected to fail* —
-  student scaffolding (`prompting`), or a real test over a planted bug
-  (`cli-agents`, where an agent is pointed at it). If one starts passing,
+  student scaffolding (`prompting`'s tests-first placeholder), or a real
+  test over a planted bug (`prompting`'s order test, and `cli-agents`,
+  where an agent is pointed at it). If one starts passing,
   a worked solution has reached the public repo and the gate says so.
 - `check_links.py` matters more here than in OOC: the lab READMEs run
   10k–30k characters with their own tables of contents, and they arrived
