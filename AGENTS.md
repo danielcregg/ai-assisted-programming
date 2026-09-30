@@ -427,8 +427,10 @@ example.
   awkward addresses and counts where they disagree) rather than asking
   the student to compare by eye and write it down. When a lab runs
   short, extend a task rather than adding a write-up: the same prompt
-  put to two or three other models from the model picker, framed as a
-  hunt ("which one can you catch out?"), is the cheapest extension.
+  again in two or three fresh conversations, framed as a hunt ("does it
+  make the same choices twice?"), is the cheapest extension. Never make
+  a step depend on choosing a model: students on the Copilot student
+  plan cannot switch models.
 - **Surprises that teach either way.** Model behaviour moves every few
   months, so a DIY must land whichever way the model behaves — anchor it
   on something the student checks themselves (`hasattr`, `wc -l`,
