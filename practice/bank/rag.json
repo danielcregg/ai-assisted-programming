@@ -51,16 +51,16 @@
       "id": "rag-004",
       "difficulty": "easy",
       "type": "code",
-      "question": "Two searches over a corpus of programming notes returned the results shown. The second query shares almost no words with the chunk it found. What explains the match?",
-      "code": "Query: \"what is a variable\"\n  0.81  introduction_to_programming.txt  \"A variable is a named location...\"\n\nQuery: \"how do I store a value under a name\"\n  0.78  introduction_to_programming.txt  \"A variable is a named location...\"",
+      "question": "Two searches over a corpus of programming notes returned the top hits shown. That chunk defines a variable as \"a labeled box that stores information\", and the second query shares none of those words. What explains the match?",
+      "code": "Query: \"what is a variable\"\n  0.42  introduction_to_programming.txt    \"Introduction to Programming Programming is the...\"\n\nQuery: \"how can my code remember a number for later\"\n  0.31  introduction_to_programming.txt    \"Introduction to Programming Programming is the...\"",
       "options": [
         "The query and the chunk were embedded by meaning, and their meanings are close whatever words they use",
-        "The search matched on the shared words `a` and `name`, which appear in both the query and the start of the chunk",
+        "The search matched on the shared words `a` and `number`, which appear in both the second query and the chunk",
         "The index remembered the first query's result and reused it for the next query it received",
         "The chunk is the first in its file, so the search returns it whenever nothing else scores higher"
       ],
       "answer": 0,
-      "explanation": "This is the whole justification for embeddings. A keyword search would find nothing useful for the second query, while meaning-based search returns the same top chunk with a similar score. If the two result sets had been completely different, the first thing to check is that the query was embedded with the same model as the chunks."
+      "explanation": "This is the whole justification for embeddings. A keyword search would have nothing to match for the second query, while meaning-based search returns the same top chunk. The lower score is normal: a similarity is not a percentage. If the two result sets had been completely different, the first thing to check is that the query was embedded with the same model as the chunks."
     },
     {
       "id": "rag-005",
@@ -82,7 +82,7 @@
       "difficulty": "easy",
       "type": "code",
       "question": "The corpus contains only notes about programming. What does this result demonstrate?",
-      "code": "Query: \"how do I bake sourdough\"\n  0.21  introduction_to_programming.txt  \"A variable is a named location...\"\n  0.18  data_structures_basics.txt       \"Variables can hold references...\"",
+      "code": "Query: \"how do I bake sourdough\"\n  0.09  algorithms_overview.txt            \"Algorithms Overview An algorithm is a...\"\n  0.09  web_development_intro.txt          \"Web Development Introduction Web development is...\"",
       "options": [
         "The index is corrupted, because a working search returns an empty list for a query it cannot answer",
         "The embedding model has no representation of cooking, so it fell back to returning the first two chunks in the index",
@@ -186,8 +186,8 @@
       "id": "rag-013",
       "difficulty": "medium",
       "type": "code",
-      "question": "Neighbouring chunks were printed to check the chunker. What does this output confirm, and why is it wanted?",
-      "code": "Overlap check: chunk 0 ends \"...a variable is a named\" /\n               chunk 1 begins \"a variable is a named location...\"",
+      "question": "After chunking, the lab printed this check on its first two chunks. What does it confirm, and why is it wanted?",
+      "code": "Overlap check: chunk 1 begins \"in half, eliminating the half...\" -- those words also sit inside chunk 0: True",
       "options": [
         "Chunk 1 duplicates chunk 0 in full, which doubles the index size and should be fixed",
         "The chunker split in the middle of a sentence, which is a bug that will corrupt the embeddings of both chunks",
@@ -201,8 +201,8 @@
       "id": "rag-014",
       "difficulty": "medium",
       "type": "code",
-      "question": "What do the numbers `0.81` and `0.64` represent?",
-      "code": "Query: \"what is a variable\"\n  0.81  introduction_to_programming.txt  \"A variable is a named location...\"\n  0.64  data_structures_basics.txt       \"Variables can hold references...\"",
+      "question": "What do the numbers `0.42` and `0.26` represent?",
+      "code": "Query: \"what is a variable\"\n  0.42  introduction_to_programming.txt    \"Introduction to Programming Programming is the...\"\n  0.26  introduction_to_programming.txt    \"through a list of numbers, while...\"",
       "options": [
         "The fraction of the query's words that appear somewhere in the text of each retrieved chunk",
         "The language model's confidence that each chunk contains a correct answer to the question asked",
