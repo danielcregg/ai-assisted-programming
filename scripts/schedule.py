@@ -40,8 +40,8 @@ SITE = "https://danielcregg.is-a.dev/ai-assisted-programming/"
 # One folder per schedule row under lectures-and-labs/, named from the week
 # number (week01 ... week12; the reading week is week{NN}b-reading-week, right
 # after week NN so it sorts in place). A teaching week holds <deck>-lecture.md,
-# or a PowerPoint deck <deck>-lecture.pptx with its generated text copy
-# <deck>-lecture.notes.md (Row.lecture_text; scripts/deck_text.py);
+# or a PowerPoint deck <deck>-lecture.pptx, the only source, read as text
+# by scripts/deck_text.py;
 # a lab week also holds <lab>_lab/ (the site slug with hyphens as underscores,
 # so the folder is a valid Python package name) with README.md and the starter
 # code. MCQ weeks and the reading week hold a README.md explainer.
@@ -98,15 +98,6 @@ class Row:
     @property
     def is_pptx(self) -> bool:
         return self.lecture is not None and self.lecture.suffix == ".pptx"
-
-    @property
-    def lecture_text(self) -> Path | None:
-        """The lecture as text, for the gates and the site: a Marp deck is its own
-        text; a PowerPoint deck has <deck>-lecture.notes.md beside it, every
-        slide's text, generated from the deck by scripts/deck_text.py."""
-        if not self.is_pptx:
-            return self.lecture
-        return self.path / f"{self.deck}-lecture.notes.md"
 
     @property
     def lab_folder(self) -> str | None:

@@ -30,6 +30,11 @@ either verified, or explicitly declared unverifiable:
 Put the marker on the line directly above the opening fence. Anything else
 is checked, so nothing is silently unchecked.
 
+A PowerPoint lecture's code boxes are read from the deck itself
+(scripts/deck_text.py turns each into a fence, its language and any
+no-parse taken from the box's alt text, "Code, python, no-parse"), and a
+failure names the slide.
+
 Deliberately-illustrative fragments are common in this module's material, so
 two shapes are tolerated without a marker rather than forcing one everywhere:
 
@@ -73,8 +78,8 @@ LANGS = {
 ROOTS = ("lectures-and-labs", "mcq", "module", "practice")
 
 
-def tracked_markdown() -> list[Path]:
-    out = subprocess.run(["git", "ls-files", "*.md"],
+def tracked(pattern: str) -> list[Path]:
+    out = subprocess.run(["git", "ls-files", pattern],
                          capture_output=True, text=True, encoding="utf-8", check=True)
     paths = []
     for rel in out.stdout.splitlines():
@@ -84,6 +89,28 @@ def tracked_markdown() -> list[Path]:
         if p.parts and p.parts[0] in ROOTS and p.is_file():
             paths.append(p)
     return paths
+
+
+def tracked_markdown() -> list[Path]:
+    return tracked("*.md")
+
+
+def sources() -> list[tuple[str, str]]:
+    """(where, markdown) for every tracked markdown file, and for every slide of
+    every PowerPoint lecture: a deck's code boxes are read from the deck itself
+    (scripts/deck_text.py), as fences with any no-parse marker, slide by slide."""
+    out = [(p.as_posix(), p.read_text(encoding="utf-8")) for p in tracked_markdown()]
+    decks = tracked("*-lecture.pptx")
+    if decks:
+        try:
+            from deck_text import read_deck, slides_of
+        except ImportError:
+            raise SystemExit("verify_snippets: python-pptx is needed to read the PowerPoint "
+                             "lectures' code (pip install python-pptx)")
+        for deck in decks:
+            _, slides = slides_of(read_deck(deck), [])
+            out += [(f"{deck.as_posix()}: slide {n}", md) for n, md in enumerate(slides, 1)]
+    return out
 
 
 def scan(text: str):
@@ -259,8 +286,7 @@ def main() -> int:
     findings, checked, skipped = [], 0, 0
     by_lang: dict[str, int] = {}
 
-    for path in tracked_markdown():
-        text = path.read_text(encoding="utf-8")
+    for where, text in sources():
         for lineno, tag, code, marked in scan(text):
             lang = LANGS.get(tag)
             if lang is None:
@@ -274,7 +300,7 @@ def main() -> int:
             checked += 1
             by_lang[lang] = by_lang.get(lang, 0) + 1
             if err:
-                findings.append(f"{path.as_posix()}:{lineno}: {err}")
+                findings.append(f"{where}:{lineno}: {err}")
 
     for line in findings:
         print(line)

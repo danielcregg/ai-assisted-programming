@@ -123,9 +123,10 @@ own. They recur through the labs, so you meet each one more than once:
 - **Lectures and labs** live together, one folder per week, under
   `lectures-and-labs/weekNN/`: the deck is `<topic>-lecture.md` (Marp
   markdown) or `<topic>-lecture.pptx`, the PowerPoint deck as the only
-  source, with a text copy the site workflow generates beside it
-  (`scripts/deck_text.py`); the lab is `<topic>_lab/`. Decks carry no
-  speaker notes: every slide stands on its own. The week number names the
+  source, with nothing derived from it committed (the site build and the
+  gates read it through `scripts/deck_text.py`); the lab is
+  `<topic>_lab/`. Decks carry no speaker notes: every slide stands on its
+  own. The week number names the
   folder and nothing else; the site keeps topic addresses, taken from the
   schedule. All ten decks are written. Every deck is
   self-contained and names no lecturer or institution, so any week can be
@@ -136,13 +137,12 @@ own. They recur through the labs, so you meet each one more than once:
   site they are addressed by topic (`/labs/<topic>/`), so a reshuffled
   schedule renames folders but never a link.
 - **Three GitHub Actions workflows.** `marp` runs on every push to `main`:
-  it regenerates the PowerPoint decks' text copies, runs the nine gates
-  (safety audit, links, snippets, lab code, practice bank, lab and deck
-  structure, schedule, site index), renders every Marp deck to HTML and PDF,
-  publishes each PowerPoint deck with a page that shows it in Microsoft's
-  web viewer, builds the lab pages and the practice app, and publishes the
-  site straight to GitHub Pages. The only thing committed back is a
-  PowerPoint deck's regenerated text copy.
+  it runs the nine gates (safety audit, links, snippets, lab code, practice
+  bank, lab and deck structure, schedule, site index), renders every Marp
+  deck to HTML and PDF, publishes each PowerPoint deck with a page that
+  shows it in Microsoft's web viewer, builds the lab pages and the practice
+  app, and publishes the site straight to GitHub Pages — nothing is
+  committed back.
   `current-week` runs every Monday and rewrites the banner above this
   schedule. Both are guarded to run only in this repository, never in a
   student's copy. `course-sync` is the inverse: it runs only in a

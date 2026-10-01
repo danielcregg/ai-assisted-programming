@@ -55,9 +55,10 @@ withholding — by teaching while you help:
 (`week01` … `week12`, plus `week06b-reading-week`), listed with links in
 `lectures-and-labs/README.md`. A week's lecture is `<topic>-lecture.md`
 (Marp markdown — the teaching is in the slides' prose and fenced code), or
-a PowerPoint deck, `<topic>-lecture.pptx`, whose every slide's text is also
-in `<topic>-lecture.notes.md` beside it, generated from the deck: read that
-one, since a `.pptx` cannot be read as text. Its lab is
+a PowerPoint deck, `<topic>-lecture.pptx`. A `.pptx` cannot be read as
+text: that lecture's page on the module site (the week's *slides* link)
+shows the slides and every slide's text, so read that page, or ask the
+student to paste the slide in question. Its lab is
 `<topic>_lab/README.md` beside the code the student edits. A rendered, easier-to-read version of
 everything is at https://danielcregg.is-a.dev/ai-assisted-programming/.
 
@@ -93,7 +94,7 @@ that sign-in lives in the agent's own configuration, never in the repo.
   teaching week holds `<topic>-lecture.md` (the Marp deck, THE canonical
   lecture; `<topic>` is the row's `lecture` name, which is also the deck's
   site address), or instead a PowerPoint deck `<topic>-lecture.pptx` with
-  its generated text copy `.notes.md` (see "PowerPoint lectures" below),
+  nothing beside it (see "PowerPoint lectures" below),
   and, in a lab week, `<topic>_lab/` (the row's `lab` name
   with hyphens as underscores, so it is an importable Python package
   name): `README.md` (the instructions students follow) plus the starter
@@ -261,25 +262,20 @@ powerpoint-maker skill: code in dark syntax-coloured boxes, prompts and
 replies in labelled boxes). Everything above about content still holds:
 the deck flow below, portability, no speaker notes.
 
-**The deck is the only source.** Edit it any way you like (PowerPoint,
-PowerPoint for the web, or python-pptx for an assistant) and commit the
-`.pptx`; on GitHub you can upload it over the old one. Nothing else needs
-doing, and nothing runs on Windows. On every push the site workflow:
+**The deck is the only source, and nothing derived from it is committed.**
+Edit it any way you like (PowerPoint, PowerPoint for the web, or
+python-pptx for an assistant) and commit the `.pptx`; on GitHub you can
+upload it over the old one. Nothing else needs doing, and nothing runs on
+Windows. On every push the site workflow reads the deck itself, slide by
+slide, through `scripts/deck_text.py` (python-pptx): the gates check its
+text and code boxes (snippets, portability), and the site publishes it
+with a page that shows it in **Microsoft's web viewer** (free, no download
+or account; Microsoft does not support it for production use, so the page
+also offers the deck as a download) and every slide's text below.
 
-1. writes `<topic>-lecture.notes.md` from the deck
-   (`scripts/deck_text.py`, python-pptx): every slide's text as markdown
-   in the shape of a Marp deck. A student's assistant cannot open a
-   `.pptx`, so this is what it reads to learn what the lecture says;
-2. runs the gates on that text (snippets, portability, schedule);
-3. publishes the deck with a page that shows it in **Microsoft's web
-   viewer** (free, no download or account; Microsoft does not support it
-   for production use, so the page also offers the deck as a download),
-   and every slide's text below, read from the deck itself;
-4. commits the regenerated text copy back to the repo, so students' copies
-   receive it with the deck.
-
-Never edit a `.notes.md` by hand: the next push overwrites it. There is no
-PDF. A code box's alt text names its language (`Code, python`); add
+To read a deck as text yourself, e.g. as an assistant that cannot open a
+`.pptx`: `python scripts/deck_text.py <deck>.pptx`. There is no PDF and no
+text copy. A code box's alt text names its language (`Code, python`); add
 `, no-parse` to exempt a deliberately incomplete snippet, as
 `<!-- no-parse -->` does above a fence. A box named `Prompt …`, `Reply …`
 or `Callout …` comes through as a quote, and a chart as its alt text, so
@@ -423,10 +419,8 @@ that makes every comparison in the lab.
 - To change a lecture: edit its week's `<topic>-lecture.md` and push —
   CI re-renders the deck and republishes the site.
 - To change a PowerPoint lecture: edit the `.pptx` and commit it (or
-  upload it on GitHub). That is all: the site workflow regenerates the
-  `.notes.md` text copy, checks it, publishes the deck and commits the copy
-  back. To run the gates locally first, run `python scripts/deck_text.py`
-  before them. Never edit a `.notes.md`.
+  upload it on GitHub). That is all: the site workflow reads the deck,
+  checks it and publishes it.
 - To add a lab: create `<topic>_lab/` in its week's folder with a
   `README.md` to the formula above plus starter code, name it in the row's
   `lab`, and add `"<topic>"` to `CONFORMING` in
@@ -447,10 +441,8 @@ that makes every comparison in the lab.
 
 ## The gates
 
-Nine run on every push, after the PowerPoint lectures' text copies are
-regenerated. Before any push, all must pass:
+Nine run on every push. Before any push, all must pass:
 
-    python scripts/deck_text.py              # first: the PowerPoint decks' text copies
     python scripts/safety_audit.py           # credentials, student data, bad paths
     python scripts/check_links.py            # every relative link and anchor resolves
     python scripts/verify_snippets.py        # every fenced snippet parses

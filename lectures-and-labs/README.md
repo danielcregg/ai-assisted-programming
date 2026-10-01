@@ -6,10 +6,10 @@ order. A teaching week's folder holds:
 - **`<topic>-lecture.md`**: that week's lecture slides (for example
   `rag-lecture.md`). In a Codespace it opens as slides; in VS Code on
   your own computer, install *Marp for VS Code* and open the preview.
-  A week taught from PowerPoint has **`<topic>-lecture.pptx`** instead,
-  with every slide's text in `<topic>-lecture.notes.md` beside it (the
-  file an AI assistant can read). To look at the slides, use the week's
-  *slides* link on the module site.
+  A week taught from PowerPoint has **`<topic>-lecture.pptx`** instead.
+  To look at its slides, use the week's *slides* link on the module site:
+  that page also has every slide's text, which is the link to give an AI
+  assistant (it cannot read a `.pptx` file).
 - **`<topic>_lab/`**: the lab, with its **`README.md`** (the instructions)
   and the starter code you work in. Your own code goes in that folder too.
 

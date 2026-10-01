@@ -83,8 +83,10 @@ def blank(match: re.Match) -> str:
     return " " * len(match.group(0))
 
 
-def check(deck: Path, identity_only: bool = False) -> list[str]:
-    text = deck.read_text(encoding="utf-8")
+def check(deck: Path, identity_only: bool = False, text: str | None = None,
+          where: str | None = None) -> list[str]:
+    """Findings for a Marp deck, or (given text and where) one PowerPoint slide."""
+    text = deck.read_text(encoding="utf-8") if text is None else text
     text = FRONTMATTER_WEEK.sub(blank, text, count=1)
     patterns = IDENTITY if identity_only else {**IDENTITY, **SCHEDULE}
     if identity_only:
@@ -98,19 +100,33 @@ def check(deck: Path, identity_only: bool = False) -> list[str]:
         for m in pattern.finditer(flat):
             lineno = text.count("\n", 0, m.start()) + 1
             hit = " ".join(m.group(0).split())
-            findings.append((lineno, f"{deck.as_posix()}:{lineno}: {label} -> {hit!r}"))
+            place = where or f"{deck.as_posix()}:{lineno}"
+            findings.append((lineno, f"{place}: {label} -> {hit!r}"))
     return [finding for _, finding in sorted(findings)]
 
 
 def main() -> int:
     if not ROOT.is_dir():
         return 0
-    # A PowerPoint deck is checked through its generated text copy: every
-    # slide's text (scripts/deck_text.py, run before the gates).
-    decks = sorted([*ROOT.glob("*/*-lecture.md"), *ROOT.glob("*/*-lecture.notes.md")])
+    # A PowerPoint deck is read from the deck itself, slide by slide
+    # (scripts/deck_text.py).
+    decks = sorted([*ROOT.glob("*/*-lecture.md"), *ROOT.glob("*/*-lecture.pptx")])
     findings = []
     for deck in decks:
-        findings.extend(check(deck, identity_only=deck.name.startswith(f"{INTRO}-lecture.")))
+        intro = deck.name.startswith(f"{INTRO}-lecture.")
+        if deck.suffix != ".pptx":
+            findings.extend(check(deck, identity_only=intro))
+            continue
+        try:
+            from deck_text import read_deck, slides_of
+        except ImportError:
+            print("check_deck_portability: python-pptx is needed to read the PowerPoint "
+                  "lectures (pip install python-pptx)", file=sys.stderr)
+            return 1
+        _, slides = slides_of(read_deck(deck), [])
+        for n, md in enumerate(slides, 1):
+            findings.extend(check(deck, identity_only=intro, text=md,
+                                  where=f"{deck.as_posix()}: slide {n}"))
 
     for line in findings:
         print(line)
