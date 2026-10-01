@@ -97,6 +97,7 @@ RETIRE_RE='^(lectures-and-labs/(README\.md|[^/]+/([^/]+-lecture\.(md|notes\.md|p
 UPSTREAM="$(git rev-parse "upstream/$BRANCH")"
 NL='
 '
+TAB="$(printf '\t')"
 
 # Whose file is it? The test is its CONTENT. A file is the module repo's when
 # what you have committed at that path is, byte for byte, a version the
@@ -113,24 +114,27 @@ NL='
 # the stale baseline, looked like your edit and was never updated again. A
 # version the module repo published stays recognisable however old it is.
 #
-# PUBLISHED holds one "<blob id> <path>" line for every version of every file
-# in the module repo's history.
+# PUBLISHED holds one "<mode> <blob id> <path>" line for every version of
+# every file in the module repo's history. The mode is part of a version: a
+# file you made executable is yours, though its bytes are the module repo's.
 PUBLISHED="$NL$(git -c core.quotepath=false -c log.showRoot=true log --format= --raw --no-abbrev --no-renames -m "$UPSTREAM" 2>/dev/null \
-  | awk -F'\t' 'NF == 2 { split($1, f, " "); print f[4] " " $2 }')$NL"
+  | awk -F'\t' 'NF == 2 { split($1, f, " "); print f[2] " " f[4] " " $2 }')$NL"
 [ "$PUBLISHED" != "$NL$NL" ] || die "Could not read the module repo's history. Nothing changed."
-published() {   # $1 = blob id, $2 = path
+published() {   # $1 = "<mode> <blob id>", $2 = path
   case "$PUBLISHED" in *"$NL$1 $2$NL"*) return 0 ;; esac
   return 1
 }
 
 is_yours() {
   local p="$1" mine last
-  if mine="$(git rev-parse -q --verify "HEAD:$p" 2>/dev/null)"; then
+  mine="$(git ls-tree HEAD -- "$p" 2>/dev/null)"     # "<mode> <type> <id><TAB><path>"
+  if [ -n "$mine" ]; then
     # In your last commit. Yours if you have changed it since (edited, staged
     # or deleted, not committed), or if what you committed is your own.
     git diff --quiet HEAD -- "$p" 2>/dev/null || return 0
     git diff --quiet --cached HEAD -- "$p" 2>/dev/null || return 0
-    if published "$mine" "$p"; then return 1; fi
+    mine="${mine%%$TAB*}"
+    if published "${mine%% *} ${mine##* }" "$p"; then return 1; fi
     return 0
   fi
   # Not in your last commit. If something is there, you created it.
@@ -275,7 +279,7 @@ fi
 # the same stand-in, so a night with nothing new pushes nothing.
 stand_in() {
   local index tree when head
-  index="$(git rev-parse --absolute-git-dir)/course-sync.index" || return 1
+  index="$(git rev-parse --absolute-git-dir)/course-sync.index" || return 1   # a scratch index: yours is not touched
   head="$(git rev-parse HEAD)" || return 1
   rm -f "$index"
   GIT_INDEX_FILE="$index" git read-tree "$UPSTREAM" || return 1

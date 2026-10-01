@@ -349,6 +349,31 @@ test_a_file_you_emptied_is_kept() {
   expect "the emptied starter file to still be the student's" [ "$(on_github "$LAB/starter.py")" = "$mine" ]
 }
 
+mode_on_github() { git -C "$ORIGIN" ls-tree main -- "$1" | cut -c1-6; }
+
+test_a_file_you_only_made_executable_is_kept() {
+  # chmod +x is an edit too. The module repo published that content, but
+  # never as an executable file, and taking the file back would undo the
+  # student's chmod every night.
+  make_copy
+  local mine; mine="$(on_github "$LAB/starter.py")"
+  git -C "$COPY" update-index --chmod=+x -- "$LAB/starter.py"
+  git -C "$COPY" commit -q -m "make the starter runnable" && git -C "$COPY" push -q origin HEAD:main
+  module_edit "$LAB/starter.py" "print('starter, version 2')"
+  nightly
+  expect "the starter file to still be executable" [ "$(mode_on_github "$LAB/starter.py")" = 100755 ]
+  expect "its content to be as the student left it" [ "$(on_github "$LAB/starter.py")" = "$mine" ]
+}
+
+test_a_file_the_module_made_executable_follows() {
+  make_copy
+  git -C "$MOD" update-index --chmod=+x -- "$LAB/starter.py"
+  git -C "$MOD" commit -q -m "module: the starter is executable" && git -C "$MOD" push -q origin HEAD:main
+  nightly
+  expect "the untouched starter file to be executable in the copy too" \
+    [ "$(mode_on_github "$LAB/starter.py")" = 100755 ]
+}
+
 # ------------------------------------- the failure of September-October 2026
 
 test_the_baseline_push_survives_a_workflow_edit() {
