@@ -392,6 +392,11 @@ test_a_file_you_only_made_executable_is_kept() {
 
 test_a_file_the_module_made_executable_follows() {
   make_copy
+  # Windows has no executable bit, so there git cannot commit a change of
+  # mode from the working tree. The nightly run and a Codespace are Linux.
+  if [ "$(git -C "$COPY" config --get core.filemode)" = false ]; then
+    skip "this filesystem does not record the executable bit"; return
+  fi
   git -C "$MOD" update-index --chmod=+x -- "$LAB/starter.py"
   git -C "$MOD" commit -q -m "module: the starter is executable" && git -C "$MOD" push -q origin HEAD:main
   nightly
