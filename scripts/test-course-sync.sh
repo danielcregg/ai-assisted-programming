@@ -228,6 +228,31 @@ test_only_course_files_are_touched() {
   expect "the copy's workflow to be as it was" [ "$(on_github "$WORKFLOW")" = "$workflow_before" ]
 }
 
+test_a_file_with_a_non_ascii_name_is_updated() {
+  local page="lectures-and-labs/week01/café-lecture.md"
+  put "$MOD" "$page" "lecture, version 1"; module_commit "module: a page with an accent in its name"
+  make_copy
+  module_edit "$page" "lecture, version 2"
+  nightly
+  expect "the script to succeed" [ "$RC" = 0 ]
+  expect "the page to be the module's current one" is_current "$page"
+}
+
+test_a_name_with_brackets_touches_that_file_only() {
+  # To git, data[1].txt is also a pattern that matches data1.txt.
+  put "$MOD" "$LAB/data[1].txt" "data, version 1"
+  put "$MOD" "$LAB/data1.txt" "other data, version 1"
+  module_commit "module: two data files"
+  make_copy
+  student_edit "$LAB/data1.txt" "my own data"
+  student_commit
+  local mine; mine="$(on_github "$LAB/data1.txt")"
+  module_edit "$LAB/data[1].txt" "data, version 2"
+  nightly
+  expect "the file the module changed to be current" is_current "$LAB/data[1].txt"
+  expect "the student's file beside it to be untouched" [ "$(on_github "$LAB/data1.txt")" = "$mine" ]
+}
+
 test_a_page_the_module_retired_is_removed() {
   make_copy
   module_remove "$LECTURE"

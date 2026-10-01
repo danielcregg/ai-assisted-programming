@@ -16,6 +16,10 @@
 # (In a Codespace it also runs by itself each time you open the workspace,
 # and the course-sync workflow runs it in your repo on GitHub every night.)
 set -uo pipefail
+# A path is a path. Left to itself git reads a name such as data[1].txt as a
+# pattern that also matches data1.txt, so updating the one would reach the
+# other -- which may be yours.
+export GIT_LITERAL_PATHSPECS=1
 
 UPSTREAM_URL="https://github.com/danielcregg/ai-assisted-programming.git"
 UPSTREAM_SLUG="danielcregg/ai-assisted-programming"
@@ -244,7 +248,7 @@ if [ ${#touched[@]} -gt 0 ]; then
   # file staged but never committed.
   while IFS= read -r p; do
     [ -n "$p" ] && changed+=("$p")
-  done < <(git diff --cached --name-only --no-renames -- "${touched[@]}")
+  done < <(git -c core.quotepath=false diff --cached --name-only --no-renames -- "${touched[@]}")
 fi
 
 if [ ${#changed[@]} -eq 0 ]; then
