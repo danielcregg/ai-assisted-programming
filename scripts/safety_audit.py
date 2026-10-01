@@ -178,7 +178,7 @@ def read_text_relaxed(path: Path) -> str:
 def pptx_text(path: Path) -> str:
     """Every XML part of a PowerPoint deck, decompressed, each after a line naming it.
 
-    As raw bytes a .pptx is a zip archive, and a key typed into a speaker note
+    As raw bytes a .pptx is a zip archive, and a key typed into a notes pane
     or a hidden text box sits in a compressed part no pattern can see. The
     parts hold every slide, note, comment, alt text and link as plain text.
     A file that is not a zip archive reads as nothing here; check 1 reports it."""

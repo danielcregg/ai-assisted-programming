@@ -2,7 +2,8 @@
 """Generate the GitHub Pages landing page from module/schedule.json.
 
 One timeline row per row of the schedule, in schedule order: lecture rows
-get title + slides/lab/pdf buttons, MCQ rows and the reading week render as
+get title + slides/lab buttons and a download (a Marp deck's PDF, or a
+PowerPoint deck itself), MCQ rows and the reading week render as
 "// comment" marker rows. Titles come from each deck's frontmatter; the
 order, the week numbers and the calendar come from the schedule
 (scripts/schedule.py). Nothing here is derived from folder names.
@@ -121,8 +122,8 @@ STYLE = """<style>
     transition: background-color 120ms ease, color 120ms ease;
   }
   .actions .open:hover { background: var(--blue); color: var(--paper); }
-  /* pdf: deliberately quiet -- the deck and lab are the actions that matter,
-     but this is now the only route to a downloadable copy. */
+  /* pdf / pptx: deliberately quiet -- the deck and lab are the actions that
+     matter, but this is the route to a downloadable copy. */
   .actions .dl { color: var(--muted); text-decoration: none; font-size: 13.5px; }
   .actions .dl:hover { color: var(--blue); text-decoration: underline; }
   .marker { color: var(--muted); font-family: var(--mono); font-size: 15.5px; }
@@ -237,9 +238,12 @@ def lecture_row(row: Row, title: str) -> str:
     t = html.escape(title)
     lab = (f'      <a class="open" href="labs/{row.lab}/"'
            f' aria-label="Week {row.week}: {t} — lab">lab</a>\n') if row.lab else ""
-    pptx = (f'      <a class="dl" href="{row.deck}/slides.pptx"'
-            f' aria-label="Week {row.week}: {t} — download the PowerPoint">pptx</a>\n'
-            ) if row.is_pptx else ""
+    # A Marp deck's PDF is rendered by the site build; a PowerPoint deck is offered as itself.
+    download = (f'      <a class="dl" href="{row.deck}/slides.pptx"'
+                f' aria-label="Week {row.week}: {t} — download the PowerPoint">pptx</a>\n'
+                if row.is_pptx else
+                f'      <a class="dl" href="{row.deck}/slides.pdf"'
+                f' aria-label="Week {row.week}: {t} — download the PDF">pdf</a>\n')
     return (f'  <li class="row lecture" data-index="{row.index}">\n'
             f'    <span class="num" data-week="{row.week}" aria-hidden="true">{row.week}</span>\n'
             f'    <span class="topic"><a href="{row.deck}/index.html">{t}</a></span>\n'
@@ -247,9 +251,7 @@ def lecture_row(row: Row, title: str) -> str:
             f'      <a class="open" href="{row.deck}/index.html"'
             f' aria-label="Week {row.week}: {t} — open slides">slides</a>\n'
             f'{lab}'
-            f'      <a class="dl" href="{row.deck}/slides.pdf"'
-            f' aria-label="Week {row.week}: {t} — download the PDF">pdf</a>\n'
-            f'{pptx}'
+            f'{download}'
             f'    </span>\n'
             f'  </li>\n')
 

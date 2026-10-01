@@ -59,8 +59,8 @@ SCHEDULE = {
 }
 
 # Frontmatter `week:` is structural metadata the site build reads, not
-# prose a reader ever sees, so it is skipped. Speaker notes ARE checked:
-# they ship inside the rendered HTML and another lecturer reads them.
+# prose a reader ever sees, so it is skipped. Everything else in a deck,
+# comments included, ships inside the rendered HTML and is checked.
 FRONTMATTER_WEEK = re.compile(r"(?m)^week:\s*\d+\s*$")
 
 
@@ -106,7 +106,7 @@ def main() -> int:
     if not ROOT.is_dir():
         return 0
     # A PowerPoint deck is checked through its generated text copy: every
-    # slide's text and speaker notes (scripts/export_decks.py).
+    # slide's text (scripts/deck_text.py, run before the gates).
     decks = sorted([*ROOT.glob("*/*-lecture.md"), *ROOT.glob("*/*-lecture.notes.md")])
     findings = []
     for deck in decks:
