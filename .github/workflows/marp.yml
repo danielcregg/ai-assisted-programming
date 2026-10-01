@@ -8,13 +8,15 @@ on:
 
 # Pages is deployed straight from this workflow (no gh-pages branch): the
 # built site is uploaded as an artifact and published by actions/deploy-pages.
-# Nothing lands in git, so the copies students make from this template
+# The site never lands in git, so the copies students make from this template
 # inherit only the source, and the deployment history lives in the
 # github-pages environment with rollback, instead of as commits nobody reads.
+# The one thing committed back is a PowerPoint lecture's text copy (the
+# text-copies job), because students' assistants read it in their own copies.
 # Least privilege by default: the build job only reads the repo. The Pages
-# write + OIDC token are granted to the deploy job alone, so the job that
-# runs marp, npm and the build scripts cannot publish to the site even if
-# something it executes tries to.
+# write + OIDC token are granted to the deploy job alone, and contents write
+# to the text-copies job alone, so the job that runs marp, npm and the build
+# scripts cannot publish or push even if something it executes tries to.
 permissions:
   contents: read
 
@@ -54,7 +56,8 @@ jobs:
           # markdown-it-py: build_lab_pages renders lab READMEs (CommonMark, so
           # fenced code inside numbered steps renders as it does on GitHub).
           # pytest: verify_labs runs the labs' own tests.
-          python -m pip install --quiet pyyaml markdown-it-py pytest
+          # python-pptx: deck_text and render_decks read the PowerPoint lectures.
+          python -m pip install --quiet pyyaml markdown-it-py pytest python-pptx
 
       - name: Install lab dependencies
         run: |
@@ -70,7 +73,12 @@ jobs:
             echo "::endgroup::"
           done
 
-      - name: Gates - safety, links, snippets, labs, structure, portability, notes, schedule
+      - name: PowerPoint lectures' text copies, from the decks
+        # The deck is the only source: its text copy is regenerated here, so the
+        # gates below check the deck as it is now, whatever copy was committed.
+        run: python scripts/deck_text.py
+
+      - name: Gates - safety, links, snippets, labs, structure, portability, schedule
         run: |
           set -euo pipefail
           python scripts/safety_audit.py
@@ -80,7 +88,6 @@ jobs:
           python scripts/check_practice_bank.py
           python scripts/check_lab_structure.py
           python scripts/check_deck_portability.py
-          python scripts/check_speaker_notes.py
           python scripts/check_schedule.py
 
       - name: Install Marp CLI
@@ -103,10 +110,9 @@ jobs:
           # the site address comes from the schedule, not the folder name. PDF
           # only: Marp's pptx export wraps each slide as an image, so it offers
           # nothing the PDF doesn't, while adding ~6 MB per deck to every deploy.
-          # A PowerPoint lecture (<topic>-lecture.pptx) is not rendered: its PDF
-          # and text copy were exported on Windows and committed beside it
-          # (scripts/export_decks.py; check_schedule.py fails if they are stale),
-          # so they are published with the deck and a page built from the text.
+          # A PowerPoint lecture (<topic>-lecture.pptx) is not rendered: the deck
+          # is published as it is, with a page that shows it in Microsoft's web
+          # viewer above every slide's text, read from the deck.
           python scripts/render_decks.py build
           touch build/.nojekyll   # serve the output as-is; no Jekyll pass
 
@@ -136,3 +142,40 @@ jobs:
       - name: Publish to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+  text-copies:
+    # A PowerPoint lecture's text copy (<topic>-lecture.notes.md) is how a
+    # student's assistant reads the lecture, in the student's own copy of this
+    # repo, so it must be in git. Nobody runs anything for it: when a deck
+    # changed, this commits the regenerated copies back, once the build (and
+    # its gates) passed. A push made with this job's token starts no new run.
+    needs: build
+    if: github.repository == 'danielcregg/ai-assisted-programming'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write     # push the text copies; nothing else
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Regenerate the text copies and commit any that changed
+        run: |
+          set -euo pipefail
+          python -m pip install --quiet python-pptx markdown-it-py
+          python scripts/deck_text.py
+          git add -A -- 'lectures-and-labs/*-lecture.notes.md'
+          if git diff --cached --quiet; then
+            echo "Every text copy already matches its deck."
+            exit 0
+          fi
+          git -c user.name="github-actions[bot]" \
+              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit -q -m "chore: regenerate the PowerPoint lectures' text copies from the decks"
+          git pull -q --rebase origin main
+          git push -q origin HEAD:main
+          echo "Committed: $(git log -1 --stat --format=%h | tail -n +2)"

@@ -12,9 +12,9 @@ Fails (exit 1, every finding listed) when:
     <lab>_lab/ with README.md, no other folder, and no README.md at week
     level; an MCQ week and the reading week hold README.md, titled without a
     week number;
-  - a PowerPoint lecture's exported PDF and text copy are missing or stale
-    (the deck saved since, or the text copy edited by hand; see
-    scripts/export_decks.py), or an export sits beside no PowerPoint deck;
+  - a PowerPoint lecture's text copy is missing (scripts/deck_text.py writes
+    it; the site workflow runs that before this gate), or a .notes.md or .pdf
+    sits beside no PowerPoint deck that generates it (no PDFs are made now);
   - a tracked file under lectures-and-labs/ belongs to no schedule row, or
     anything is tracked under the retired lectures/ or labs/ layout, or an
     mcq/ folder is claimed by no row;
@@ -38,7 +38,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from schedule import MCQ, ROOT, load, stale_exports  # noqa: E402
+from schedule import MCQ, ROOT, load  # noqa: E402
 import update_current_week  # noqa: E402
 
 LECTURE_ENDINGS = ("-lecture.md", "-lecture.pptx")
@@ -112,13 +112,11 @@ def main() -> None:
         if r.deck:
             if not r.topic:
                 findings.append(f"week {r.week}: a lecture row needs a topic")
-            stale = stale_exports(r) if r.lecture.is_file() else []
             if not r.lecture.is_file():
                 findings.append(f"week {r.week}: {r.lecture.as_posix()} does not exist")
-            elif stale:
-                findings.append(f"week {r.week}: {'; '.join(stale)}: run python "
-                                f"scripts/export_decks.py (Windows, with PowerPoint, the deck "
-                                f"closed) and commit the .pdf and .notes.md it writes")
+            elif not r.lecture_text.is_file():
+                findings.append(f"week {r.week}: {r.lecture_text.as_posix()} is missing: run "
+                                f"python scripts/deck_text.py (the site workflow does)")
             else:
                 topic = frontmatter_topic(r.lecture_text.read_text(encoding="utf-8"))
                 if topic != r.deck:
@@ -128,11 +126,11 @@ def main() -> None:
             if extra:
                 findings.append(f"week {r.week}: {d.as_posix()}/ also holds {extra}; "
                                 f"the lecture is {r.lecture.name}")
-            ours = {r.lecture_pdf.name, r.lecture_text.name} if r.is_pptx else set()
+            ours = {r.lecture_text.name} if r.is_pptx else set()
             stray = [n for n in exports if n not in ours]
             if stray:
-                findings.append(f"week {r.week}: {d.as_posix()}/ holds {stray}, exports of no "
-                                f"PowerPoint deck there; delete them")
+                findings.append(f"week {r.week}: {d.as_posix()}/ holds {stray}, which no "
+                                f"PowerPoint deck there generates; delete them")
         elif lectures or exports:
             findings.append(f"week {r.week}: {d.as_posix()}/ holds {lectures + exports}, but the "
                             f"schedule has no lecture this week")

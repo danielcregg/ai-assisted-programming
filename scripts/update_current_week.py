@@ -30,7 +30,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from schedule import ROOT, Row, Schedule, academic_year, load  # noqa: E402
+from schedule import ROOT, SITE, Row, Schedule, academic_year, load  # noqa: E402
 
 README = Path("README.md")
 INDEX = ROOT / "README.md"
@@ -74,9 +74,10 @@ def table_row(row: Row, current: Row | None, links: tuple[str, str] = FROM_ROOT)
     if current is not None and row.index == current.index:
         week = f"**➡️ {week}**"
     if row.deck:
-        # A PowerPoint lecture links its exported PDF, which GitHub shows in the page.
-        slides = row.lecture_pdf if row.is_pptx else row.lecture
-        lecture = f"[slides]({folder}{row.dir}/{slides.name})"
+        # A PowerPoint lecture links its page on the site (the deck in Microsoft's
+        # web viewer, every slide's text below): GitHub cannot show a .pptx.
+        lecture = (f"[slides]({SITE}{row.deck}/)" if row.is_pptx
+                   else f"[slides]({folder}{row.dir}/{row.lecture.name})")
         if row.lab:
             lab = f"[lab]({folder}{row.dir}/{row.lab_folder}/README.md)"
         else:
