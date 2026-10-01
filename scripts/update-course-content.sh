@@ -93,85 +93,119 @@ COURSE_RE='^(README\.md|AGENTS\.md|CLAUDE\.md|lectures-and-labs/.*|mcq/.*|module
 # lectures-and-labs/, and everything under mcq/ and module/. Never a lab
 # folder: those hold your own code.
 RETIRE_RE='^(lectures-and-labs/(README\.md|[^/]+/([^/]+-lecture\.(md|notes\.md|pptx|pdf)|README\.md))|mcq/.*|module/.*)$'
-PATHS=()
-while IFS= read -r p; do
-  [ -n "$p" ] && PATHS+=("$p")
-done < <(git ls-tree -r --name-only "upstream/$BRANCH" | grep -E "$COURSE_RE" || true)
 
-# Baseline = the content as you last received it: the commit recorded by the
-# previous run, or the initial template commit on the first run. Comparing
-# against HEAD would be wrong -- you are told to COMMIT your work, so an
-# edit you committed looks "clean" against HEAD and would be overwritten.
+UPSTREAM="$(git rev-parse "upstream/$BRANCH")"
+NL='
+'
+
+# Whose file is it? The test is its CONTENT. A file is the module repo's when
+# what you have committed at that path is, byte for byte, a version the
+# module repo has published there: today's, or an older one that a fix has
+# since replaced. Anything else you typed, and so is anything you have not
+# committed yet: yours, and left alone. (Comparing against HEAD alone would be
+# wrong -- you are told to COMMIT your work, so an edit you committed looks
+# "clean" against HEAD and would be overwritten.)
 #
-# The baseline is remembered twice: in the gitignored file .course-sync (a
+# It used to be decided by comparing each file with a remembered baseline,
+# "what you were last given". That held only while the baseline kept up, and
+# in autumn 2026 it did not: GitHub refused the nightly run's push of it (see
+# the end of this script), so each file was updated once, no longer matched
+# the stale baseline, looked like your edit and was never updated again. A
+# version the module repo published stays recognisable however old it is.
+#
+# PUBLISHED holds one "<blob id> <path>" line for every version of every file
+# in the module repo's history.
+PUBLISHED="$NL$(git -c core.quotepath=false -c log.showRoot=true log --format= --raw --no-abbrev --no-renames -m "$UPSTREAM" 2>/dev/null \
+  | awk -F'\t' 'NF == 2 { split($1, f, " "); print f[4] " " $2 }')$NL"
+[ "$PUBLISHED" != "$NL$NL" ] || die "Could not read the module repo's history. Nothing changed."
+published() {   # $1 = blob id, $2 = path
+  case "$PUBLISHED" in *"$NL$1 $2$NL"*) return 0 ;; esac
+  return 1
+}
+
+is_yours() {
+  local p="$1" mine last
+  if mine="$(git rev-parse -q --verify "HEAD:$p" 2>/dev/null)"; then
+    # In your last commit. Yours if you have changed it since (edited, staged
+    # or deleted, not committed), or if what you committed is your own.
+    git diff --quiet HEAD -- "$p" 2>/dev/null || return 0
+    git diff --quiet --cached HEAD -- "$p" 2>/dev/null || return 0
+    if published "$mine" "$p"; then return 1; fi
+    return 0
+  fi
+  # Not in your last commit. If something is there, you created it.
+  if [ -e "$p" ] || [ -L "$p" ] || git ls-files --error-unmatch -- "$p" >/dev/null 2>&1; then
+    return 0
+  fi
+  # Nothing is there. If nothing ever was, the module repo has added a file.
+  # Otherwise somebody deleted it: you, and it stays deleted; or an earlier
+  # run of this script, retiring a page the module repo has since brought
+  # back, and it comes back.
+  last="$(git log -1 --format=%an HEAD -- "$p" 2>/dev/null || true)"
+  if [ -z "$last" ] || [ "$last" = "course-update" ]; then return 1; fi
+  return 0
+}
+
+# What is worth a line of output: a file of yours that was kept, but only if
+# the module repo has changed that file since this script last ran here. An
+# edit you made weeks ago to a file it has not touched since is not news.
+# This decides what is MENTIONED, never what is kept or replaced.
+#
+# "Last ran" is remembered twice: in the gitignored file .course-sync (a
 # Codespace or your laptop) and in the ref refs/course-sync/baseline, which
-# the nightly course-sync workflow pushes to your repo on GitHub. The ref is
-# fetched here so a Codespace opened after a nightly run knows what that run
-# already delivered; otherwise last night's updates would look like your
-# own edits and never refresh again. Of the two, the NEWER wins (the one the
-# other is an ancestor of); if they are unrelated, the ref -- it was set by
-# the run that actually delivered files to your repo.
+# the nightly course-sync workflow pushes to your repo on GitHub and which is
+# fetched here. The ref is a stand-in commit (see the end of this script)
+# whose subject names the module commit it stands for. Of the two, the NEWER
+# wins (the one the other is an ancestor of); if they are unrelated, the ref.
+# On the first run it is the template's first commit.
 MARKER=".course-sync"
 git fetch --quiet origin '+refs/course-sync/baseline:refs/course-sync/baseline' 2>/dev/null || true
 FILE_BASE="$(cat "$MARKER" 2>/dev/null || true)"
 REF_BASE="$(git rev-parse -q --verify refs/course-sync/baseline 2>/dev/null || true)"
+if [ -n "$REF_BASE" ]; then
+  named="$(git log -1 --format=%s "$REF_BASE" 2>/dev/null \
+    | sed -n 's/^course-sync baseline: module repo at \([0-9a-f]\{40\}\)$/\1/p')"
+  if [ -n "$named" ] && git cat-file -e "$named^{commit}" 2>/dev/null; then REF_BASE="$named"; fi
+fi
 LAST="$FILE_BASE"
 if [ -n "$REF_BASE" ]; then
   if [ -z "$FILE_BASE" ] || ! git merge-base --is-ancestor "$REF_BASE" "$FILE_BASE" 2>/dev/null; then
     LAST="$REF_BASE"    # the ref, unless the file is strictly newer than it
   fi
 fi
-# A remembered baseline that is no longer a commit the module repo has (a
-# rewritten history, a hand-edited marker) would make every diff below fail
-# quietly and nothing would update: start over from the template instead.
-if [ -n "$LAST" ] && ! git cat-file -e "$LAST^{commit}" 2>/dev/null; then
-  say "The remembered baseline is no longer in the module repo's history; comparing against the template's first commit instead."
-  LAST=""
-fi
+if [ -n "$LAST" ] && ! git cat-file -e "$LAST^{commit}" 2>/dev/null; then LAST=""; fi
 ROOT="$(git rev-list --max-parents=0 HEAD | tail -1)"
-UPSTREAM="$(git rev-parse "upstream/$BRANCH")"
+NEWS="$NL$(git -c core.quotepath=false diff --name-only --no-renames "${LAST:-$ROOT}" "$UPSTREAM" -- 2>/dev/null || true)$NL"
+is_news() { case "$NEWS" in *"$NL$1$NL"*) return 0 ;; esac; return 1; }
 
-# Only the files the module repo has changed since the baseline need a look;
-# every other course file is either exactly what you received, or yours.
+# Every course file the module repo has that is not, here, the version it has
+# now: yours differs (M) or is missing (D). Not just the files it changed
+# lately -- a copy that fell behind for any reason catches up by itself.
 CANDIDATES=()
 while IFS= read -r p; do
   [ -n "$p" ] && CANDIDATES+=("$p")
-done < <(git diff --name-only --no-renames "${LAST:-$ROOT}" "$UPSTREAM" -- 2>/dev/null | grep -E "$COURSE_RE" || true)
-
-# Is this path yours? It is NOT yours only if you received it from the module
-# repo and have not touched it since -- in the working tree or in the index.
-# Edited, staged, deleted, or created by you: yours, and left alone.
-is_yours() {
-  local p="$1" base="$ROOT"
-  if [ -n "$LAST" ] && git cat-file -e "$LAST:$p" 2>/dev/null; then base="$LAST"; fi
-  if git cat-file -e "$base:$p" 2>/dev/null; then
-    if git diff --quiet "$base" -- "$p" 2>/dev/null \
-       && git diff --quiet --cached "$base" -- "$p" 2>/dev/null; then
-      return 1
-    fi
-    return 0    # edited, staged or deleted since you received it
-  fi
-  [ -e "$p" ]   # never received; if something is there, you created it
-}
+done < <(git -c core.quotepath=false diff --name-only --no-renames --diff-filter=MDT "$UPSTREAM" -- 2>/dev/null | grep -E "$COURSE_RE" || true)
 
 skipped=0
 failed=0
 touched=()
-for p in "${CANDIDATES[@]}"; do
-  if is_yours "$p"; then
-    say "  kept your version: $p"
-    skipped=$((skipped + 1))
-    continue
-  fi
-  # A path the module repo has removed is handled by the pass below.
-  git cat-file -e "$UPSTREAM:$p" 2>/dev/null || continue
-  if git checkout --quiet "$UPSTREAM" -- "$p" 2>/dev/null; then
-    touched+=("$p")
-  else
-    printf 'could not update %s\n' "$p" >&2
-    failed=$((failed + 1))
-  fi
-done
+if [ ${#CANDIDATES[@]} -gt 0 ]; then
+  for p in "${CANDIDATES[@]}"; do
+    if is_yours "$p"; then
+      if is_news "$p"; then
+        say "  kept your version: $p"
+        skipped=$((skipped + 1))
+      fi
+      continue
+    fi
+    if git checkout --quiet "$UPSTREAM" -- "$p" 2>/dev/null; then
+      touched+=("$p")
+    else
+      printf 'could not update %s\n' "$p" >&2
+      failed=$((failed + 1))
+    fi
+  done
+fi
 
 # Course-owned pages that upstream has since removed or renamed (a deck folder
 # under its new name, a retired MCQ page) — drop our copy too, or the old and
@@ -180,15 +214,19 @@ done
 # Only the lectures, the week pages, mcq/ and module/ are scanned (RETIRE_RE);
 # lab folders hold your own code and worksheets, so a retired lab file is
 # left in place rather than risk deleting your work.
+RETIRED=()
 while IFS= read -r p; do
-  [ -n "$p" ] || continue
-  case " ${PATHS[*]} " in *" $p "*) continue;; esac
-  if is_yours "$p"; then
-    say "  kept your file (not in the module repo any more, or never from it): $p"
-    continue
-  fi
-  git rm -q -- "$p" 2>/dev/null && touched+=("$p") && say "  removed (retired upstream): $p"
-done < <(git ls-files -- lectures-and-labs mcq module | grep -E "$RETIRE_RE")
+  [ -n "$p" ] && RETIRED+=("$p")
+done < <(git -c core.quotepath=false diff --name-only --no-renames --diff-filter=A "$UPSTREAM" -- 2>/dev/null | grep -E "$RETIRE_RE" || true)
+if [ ${#RETIRED[@]} -gt 0 ]; then
+  for p in "${RETIRED[@]}"; do
+    if is_yours "$p"; then
+      is_news "$p" && say "  kept your file (not in the module repo any more): $p"
+      continue
+    fi
+    git rm -q -- "$p" 2>/dev/null && touched+=("$p") && say "  removed (retired upstream): $p"
+  done
+fi
 
 # Commit ONLY the content paths this script rewrote. A bare `git commit`
 # would sweep in anything you happened to have staged -- and this runs
@@ -220,13 +258,52 @@ else
   fi
 fi
 
-# Bookkeeping only after everything was applied and committed: advancing
-# the baseline past an update that did not land would make that update look
-# like your own edit next time, and it would never be retried.
+# The baseline the nightly workflow pushes to your repo on GitHub: "the
+# module repo as of this run". It is a stand-in commit, not the module repo's
+# own: the module repo's files, with YOUR copy's .github/workflows in place
+# of the module repo's. The module repo's own commit cannot be pushed. It
+# carries the module repo's workflow files, and GitHub refuses a push made
+# with the Actions token that adds or changes a workflow file unless the same
+# file is already on a branch of your repo -- so from the night after a
+# workflow in the module repo was edited, that push failed in every copy made
+# before the edit.
+#
+# The stand-in still holds every course file as the module repo has it,
+# because an older copy of this script (scripts/ is never synced, so a copy
+# keeps the one it was made with) compares your files against the baseline
+# when a Codespace opens. It has no parent, and the same module commit gives
+# the same stand-in, so a night with nothing new pushes nothing.
+stand_in() {
+  local index tree when head
+  index="$(git rev-parse --absolute-git-dir)/course-sync.index" || return 1
+  head="$(git rev-parse HEAD)" || return 1
+  rm -f "$index"
+  GIT_INDEX_FILE="$index" git read-tree "$UPSTREAM" || return 1
+  GIT_INDEX_FILE="$index" git ls-files -z -- .github/workflows \
+    | GIT_INDEX_FILE="$index" git update-index -z --force-remove --stdin || return 1
+  if git cat-file -e "$head:.github/workflows" 2>/dev/null; then
+    GIT_INDEX_FILE="$index" git read-tree --prefix=.github/workflows/ "$head:.github/workflows" || return 1
+  fi
+  tree="$(GIT_INDEX_FILE="$index" git write-tree)" || return 1
+  rm -f "$index"
+  when="$(git log -1 --format=%cI "$UPSTREAM")" || return 1
+  GIT_AUTHOR_NAME="course-update" GIT_AUTHOR_EMAIL="course-update@local" GIT_AUTHOR_DATE="$when" \
+  GIT_COMMITTER_NAME="course-update" GIT_COMMITTER_EMAIL="course-update@local" GIT_COMMITTER_DATE="$when" \
+    git commit-tree "$tree" -m "course-sync baseline: module repo at $UPSTREAM"
+}
+
+# Bookkeeping only after everything was applied and committed, so a run that
+# did not finish is not recorded as one that did.
 if [ "$failed" -eq 0 ]; then
   git rev-parse "$UPSTREAM" > "$MARKER"     # local, gitignored, never pushed
-  git update-ref refs/course-sync/baseline "$UPSTREAM"   # pushed by the nightly workflow
-else
+  if baseline="$(stand_in)" && [ -n "$baseline" ]; then
+    git update-ref refs/course-sync/baseline "$baseline"   # pushed by the nightly workflow
+  else
+    printf 'could not record the baseline for the nightly run.\n' >&2
+    failed=$((failed + 1))
+  fi
+fi
+if [ "$failed" -gt 0 ]; then
   printf '%s problem(s) above; the baseline was not advanced, so the next run will try again.\n' "$failed" >&2
 fi
 [ "$skipped" -gt 0 ] && printf '(%s file(s) left alone because you had edited them.)\n' "$skipped"

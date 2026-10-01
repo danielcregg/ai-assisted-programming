@@ -438,6 +438,17 @@ that makes every comparison in the lab.
   its old URL still resolves.
 - Never edit the published HTML — it is generated. Edit the Markdown source
   and let CI rebuild.
+- To change the sync that carries all of this into students' copies
+  (`scripts/update-course-content.sh`): run
+  `bash scripts/test-course-sync.sh` before and after. It is not one of
+  the gates; it builds a small module repo and a student's copy in a
+  temporary folder and replays Codespace opens and nightly runs. A copy
+  keeps the `scripts/` folder and the workflows it was made with, so an
+  existing copy gets a new script only in its nightly run (that workflow
+  fetches the script from here), while its Codespace runs the old one for
+  good; the tests run those old scripts against the new one's results. A
+  workflow file here may be edited freely: the nightly run records its
+  baseline with the copy's own workflow files, never this repo's.
 
 ## The gates
 
