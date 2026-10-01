@@ -12,8 +12,8 @@ warning go away.
 Checks:
   1. tracked-file extensions -- no spreadsheet/archive/compiled-binary
      extensions, and no .pptx except a week's lecture deck
-     (lectures-and-labs/weekNN/<topic>-lecture.pptx), which check_schedule
-     binds to its exported PDF and text copy. Checks 3 and 4 read inside
+     (lectures-and-labs/weekNN/<topic>-lecture.pptx), which the other gates
+     read slide by slide (scripts/deck_text.py). Checks 3 and 4 read inside
      that deck, not its compressed bytes.
   2. env files -- `.env.example` is the ONLY env file that may be tracked.
      One lab (rag) needs a live API key that students supply themselves,
@@ -46,8 +46,8 @@ from pathlib import Path
 # ---------------------------------------------------------------------------
 # Check 1: tracked-file extensions that must never be committed.
 #   pptx: a stray PowerPoint (an old 2025 deck, a worksheet) is opaque to
-#   every other gate. The one exception is a week's lecture deck, whose
-#   text copy the gates read and check_schedule binds to it by hash.
+#   every other gate. The one exception is a week's lecture deck, which
+#   the gates read slide by slide through scripts/deck_text.py.
 #   mbz/zip: Moodle course backups carry student data.
 BAD_EXTENSION_RE = re.compile(
     r"\.(xlsx|xls|mbz|zip|class|jar|pptx|ppt|docx|doc|pem|key|p12|pfx)$",

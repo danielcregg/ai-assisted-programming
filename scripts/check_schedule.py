@@ -12,9 +12,9 @@ Fails (exit 1, every finding listed) when:
     <lab>_lab/ with README.md, no other folder, and no README.md at week
     level; an MCQ week and the reading week hold README.md, titled without a
     week number;
-  - a PowerPoint lecture's text copy is missing (scripts/deck_text.py writes
-    it; the site workflow runs that before this gate), or a .notes.md or .pdf
-    sits beside no PowerPoint deck that generates it (no PDFs are made now);
+  - a .notes.md text copy or a .pdf sits in a week folder: nothing derived
+    from a deck is committed any more (a PowerPoint lecture is read from the
+    deck itself, scripts/deck_text.py), so delete it;
   - a tracked file under lectures-and-labs/ belongs to no schedule row, or
     anything is tracked under the retired lectures/ or labs/ layout, or an
     mcq/ folder is claimed by no row;
@@ -114,23 +114,18 @@ def main() -> None:
                 findings.append(f"week {r.week}: a lecture row needs a topic")
             if not r.lecture.is_file():
                 findings.append(f"week {r.week}: {r.lecture.as_posix()} does not exist")
-            elif not r.lecture_text.is_file():
-                findings.append(f"week {r.week}: {r.lecture_text.as_posix()} is missing: run "
-                                f"python scripts/deck_text.py (the site workflow does)")
-            else:
-                topic = frontmatter_topic(r.lecture_text.read_text(encoding="utf-8"))
+            elif not r.is_pptx:              # a PowerPoint deck's file name is its topic
+                topic = frontmatter_topic(r.lecture.read_text(encoding="utf-8"))
                 if topic != r.deck:
-                    findings.append(f"week {r.week}: {r.lecture_text.as_posix()} is the {topic!r} "
+                    findings.append(f"week {r.week}: {r.lecture.as_posix()} is the {topic!r} "
                                     f"lecture, but the schedule names {r.deck!r}")
             extra = [n for n in lectures if n != r.lecture.name]
             if extra:
                 findings.append(f"week {r.week}: {d.as_posix()}/ also holds {extra}; "
                                 f"the lecture is {r.lecture.name}")
-            ours = {r.lecture_text.name} if r.is_pptx else set()
-            stray = [n for n in exports if n not in ours]
-            if stray:
-                findings.append(f"week {r.week}: {d.as_posix()}/ holds {stray}, which no "
-                                f"PowerPoint deck there generates; delete them")
+            if exports:
+                findings.append(f"week {r.week}: {d.as_posix()}/ holds {exports}; nothing "
+                                f"derived from a deck is committed any more, so delete them")
         elif lectures or exports:
             findings.append(f"week {r.week}: {d.as_posix()}/ holds {lectures + exports}, but the "
                             f"schedule has no lecture this week")
@@ -180,7 +175,7 @@ def main() -> None:
             if d not in claimed:
                 findings.append(f"mcq/{d}/ is not in module/schedule.json")
 
-    for deck in sorted([*ROOT.glob("*/*-lecture.md"), *ROOT.glob("*/*-lecture.notes.md")]):
+    for deck in sorted(ROOT.glob("*/*-lecture.md")):
         text = deck.read_text(encoding="utf-8")
         if re.search(r"(?m)^week:", text):
             findings.append(f"{deck.as_posix()}: frontmatter must not declare week: "

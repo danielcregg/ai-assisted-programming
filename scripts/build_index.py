@@ -275,11 +275,16 @@ def build_rows(sched: Schedule) -> tuple[str, int, int]:
     rows, lectures, markers = [], 0, 0
     for row in sched.rows:
         if row.deck:
-            deck = row.lecture_text      # a PowerPoint deck's title is in its text copy
+            deck = row.lecture
             if not deck.is_file():
                 raise SystemExit(f"build_index: week {row.week} names {deck.as_posix()}, "
                                  f"which does not exist (check_schedule.py catches this first).")
-            rows.append(lecture_row(row, deck_title(deck, row.deck)))
+            if row.is_pptx:              # a PowerPoint deck's title is its first slide's
+                from deck_text import deck_title as pptx_title
+                title = pptx_title(deck) or row.deck.replace("-", " ").title()
+            else:
+                title = deck_title(deck, row.deck)
+            rows.append(lecture_row(row, title))
             lectures += 1
         elif row.mcq:
             note = (row.notes[0].lower() + row.notes[1:]) if row.notes else "held during the lab slot"
