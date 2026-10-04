@@ -3,7 +3,7 @@
     { "slug": "introduction", "title": "Module Introduction" },
     { "slug": "overview", "title": "Overview & Setup" },
     { "slug": "prompting", "title": "Prompting" },
-    { "slug": "rag", "title": "Retrieval & Grounding" },
+    { "slug": "rag", "title": "RAG" },
     { "slug": "mcp", "title": "MCP" },
     { "slug": "agents", "title": "Coding Agents" },
     { "slug": "security", "title": "Security" },
