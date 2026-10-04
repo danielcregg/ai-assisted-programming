@@ -78,7 +78,7 @@ only.
 | 1 | Module Introduction | [slides](lectures-and-labs/week01/introduction-lecture.md) | _No labs week 1. Labs start week 2._ |
 | 2 | AIAP Overview | [slides](https://danielcregg.is-a.dev/ai-assisted-programming/overview/) | [lab](lectures-and-labs/week02/setup_lab/README.md) |
 | **➡️ 3** | Prompting & Context Engineering | [slides](https://danielcregg.is-a.dev/ai-assisted-programming/prompting/) | [lab](lectures-and-labs/week03/prompting_lab/README.md) |
-| 4 | Retrieval & Grounding | [slides](lectures-and-labs/week04/rag-lecture.md) | [lab](lectures-and-labs/week04/rag_lab/README.md) |
+| 4 | RAG | [slides](https://danielcregg.is-a.dev/ai-assisted-programming/rag/) | [lab](lectures-and-labs/week04/rag_lab/README.md) |
 | 5 | MCP | [slides](lectures-and-labs/week05/mcp-lecture.md) | [lab](lectures-and-labs/week05/mcp_lab/README.md) |
 | 6 | Coding Agents | [slides](lectures-and-labs/week06/agents-lecture.md) | [lab](lectures-and-labs/week06/agents_lab/README.md) |
 | — | Reading week | [details](lectures-and-labs/week06b-reading-week/README.md) | — |
