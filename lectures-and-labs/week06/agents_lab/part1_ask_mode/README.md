@@ -95,11 +95,12 @@ What are context managers and when should I use them?
 3. Select all the code (`Ctrl+A`), then right-click → **Review** (it may sit inside the **Generate Code** submenu)
 
 4. Compare Copilot's findings with yours (they appear in the **Comments** panel and inline in the editor)
-5. In the same conversation, **Plan**, ask follow-up questions:
+5. Fresh conversation, **Plan**, with `buggy_code.py` open. The review's findings are in the
+   Comments panel, not in the chat, so name the finding in each question:
    ```
-   Why is [specific issue] a problem?
-   How should I fix [specific bug]?
-   What testing would catch these bugs?
+   In buggy_code.py, why is [the finding, in your own words] a problem?
+   How should I fix [that bug]? Explain it, do not change the file.
+   What test would have caught it?
    ```
 6. In the Terminal, run the code. 
     ```

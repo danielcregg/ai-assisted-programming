@@ -65,6 +65,10 @@ Create a user authentication system with:
 - README documentation
 
 Use Flask for the web framework and SQLite for storage.
+
+Put every file in a new folder,
+lectures-and-labs/week06/agents_lab/part4_cloud_agent/auth-system/.
+Do not change any file outside that folder.
 ```
 
 2. **What Happens:**
