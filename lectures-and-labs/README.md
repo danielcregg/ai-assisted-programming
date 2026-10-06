@@ -99,9 +99,10 @@ get one. The CI/CD lab's review step (its section 3) reuses that same free
 key, stored as a repository secret so GitHub Actions can read it; the rest
 of that lab runs offline. Nothing else needs a key: the MCP lab's weather
 server uses a free service without one, and the security lab runs
-offline by design. The CLI agents lab needs you to sign in to a coding
-agent with your GitHub or Google account — a sign-in, never a key in a
-file.
+offline by design. The CLI agents lab needs you to sign in to Copilot
+with your GitHub account — a sign-in, never a key in a file. Its
+fallback, Gemini CLI, reuses the RAG lab's free key from a gitignored
+`.env` file.
 
 **Never commit a key.** Put it in a `.env` file in the lab folder; `.env`
 is gitignored, and the repo's safety audit will reject one if it ever gets
