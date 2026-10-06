@@ -143,6 +143,10 @@ triggers, also give the job `permissions:` with `contents: read` and
 `pull-requests: read`: on a pull request gitleaks lists the request's
 commits, and the default token of a private repo is not allowed to.
 
+gitleaks-action needs no licence key in a copy under your own account. In a
+copy that belongs to an organisation it asks for a free one, passed to the
+step as `GITLEAKS_LICENSE`.
+
 Expect the linter to go red on its first run: it finds real things in the
 starter app. If you use ruff, point it at the lab folder
 (`ruff check lectures-and-labs/week10/cicd_lab`), because `ruff check .`
