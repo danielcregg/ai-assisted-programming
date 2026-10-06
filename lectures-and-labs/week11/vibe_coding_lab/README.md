@@ -69,8 +69,8 @@ and the list survives a page refresh.
    follow-up prompts you needed.
 3. Repeat in tool two.
 4. Repeat in tool three.
-5. Check each app against the brief: add a task, tick it, delete another,
-   refresh the page. Note the first thing each tool got *wrong* — or, if it
+5. Check each app against the brief: add two tasks, tick one, delete the
+   other, refresh the page. Note the first thing each tool got *wrong* — or, if it
    got nothing wrong, the first thing it decided that your prompt did not
    say, such as what happens with an empty task or the same task twice.
 
