@@ -138,6 +138,11 @@ ordering principle for what you automate.
 the history. Without it, a push of more than one commit turns the step red
 and its log says `unknown revision`.
 
+DIY 1 triggers `ci.yml` on `push` only. If you add `pull_request` to its
+triggers, also give the job `permissions:` with `contents: read` and
+`pull-requests: read`: on a pull request gitleaks lists the request's
+commits, and the default token of a private repo is not allowed to.
+
 Expect the linter to go red on its first run: it finds real things in the
 starter app. If you use ruff, point it at the lab folder
 (`ruff check lectures-and-labs/week10/cicd_lab`), because `ruff check .`
