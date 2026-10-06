@@ -366,16 +366,16 @@
       "id": "mcp-025",
       "difficulty": "easy",
       "type": "code",
-      "question": "An assistant connected to a server with this tool is asked 'what is 2 to the power of 10?' and never calls `power`. Which change is most likely to fix that?",
-      "code": "{\n  \"name\": \"power\",\n  \"description\": \"does maths\",\n  \"inputSchema\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"x\": { \"type\": \"number\" },\n      \"y\": { \"type\": \"number\" }\n    },\n    \"required\": [\"x\", \"y\"]\n  }\n}",
+      "question": "An assistant connected to a server with this tool is asked 'what is 2 to the power of 10?' and never calls `t4`. Which change is most likely to fix that?",
+      "code": "{\n  \"name\": \"t4\",\n  \"description\": \"does maths\",\n  \"inputSchema\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"x\": { \"type\": \"number\" },\n      \"y\": { \"type\": \"number\" }\n    },\n    \"required\": [\"x\", \"y\"]\n  }\n}",
       "options": [
-        "Rename the tool to `exponentiate` so that its purpose is obvious from the name alone",
+        "Restart the assistant so that it asks the server for its list of tools a second time",
         "Remove the `required` list so the model can call the tool with fewer arguments",
         "Rewrite the description to state what the tool does and when the model should use it",
         "Change the argument types from `number` to `integer` so they match the question asked"
       ],
       "answer": 2,
-      "explanation": "`does maths` gives the model nothing to match the question against, so the tool is never chosen. A description such as 'Raise a number to a power. Use for exponentiation, e.g. 2 to the power of 10.' states what the tool does and when to use it, and that is the interface the model reads. The name and the schema matter for the call itself, not for the decision to make it."
+      "explanation": "Nothing in this listing says what `t4` is for: the name is opaque, the description is `does maths` and the arguments are bare numbers, so the model has nothing to match the question against and reaches for something else. A description such as 'Raise a number to a power. Use for exponentiation, e.g. 2 to the power of 10.' states what the tool does and when to use it. The name, the description and the schema are everything the model reads about a tool, and the description is the one place that can say when to use it."
     },
     {
       "id": "mcp-026",
