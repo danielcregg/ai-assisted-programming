@@ -400,12 +400,13 @@ A green (or informatively red) `security` run in your Actions tab, and in
 
 <details><summary>Hint</summary>
 
-`fetch-depth: 0` matters: gitleaks scans every commit in the push, not just
+`fetch-depth: 0` matters: gitleaks scans the commits in the push, not just
 the latest, because a secret you removed in the next commit is still in the
 history. It needs the commit before the first one in the push, and a
-shallow checkout does not have it. It does not go back over earlier pushes,
-though: a secret you pushed yesterday and removed today is not found by
-today's run.
+shallow checkout does not have it. Two limits are worth knowing. It does
+not go back over earlier pushes: a secret you pushed yesterday and removed
+today is not found by today's run. And it follows the branch's own line of
+commits, so commits that arrive only through a merge can be missed.
 
 The `permissions` block keeps the job's token read-only. The line
 `pull-requests: read` is in it because, on a pull request, gitleaks lists
