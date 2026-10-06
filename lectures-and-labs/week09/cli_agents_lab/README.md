@@ -425,8 +425,9 @@ everything else fall through to ASK.
 
 For step 5, count the ways there are to spell "push" or "delete" — then
 look up what `pytest --basetemp` does to the directory you give it: it
-removes it first, but only when a test uses `tmp_path`, which the sample
-app's tests do not.
+deletes it and makes it again, the first time a test asks pytest for a
+temporary folder (`tmp_path`, for example). The sample app's tests never
+ask, so with them nothing is deleted.
 
 </details>
 

@@ -73,8 +73,10 @@ it from the environment — never a literal in code, never a committed
 config file. Nothing in the module may cost a student
 money. If you see a key in a file that is about to
 be committed, say so loudly. `mcp` needs no key (its weather server uses
-`wttr.in`), and the `cli-agents` lab signs in to a coding agent instead;
-that sign-in lives in the agent's own configuration, never in the repo.
+`wttr.in`), and the `cli-agents` lab signs in to Copilot instead; that
+sign-in lives in the agent's own configuration, never in the repo. Its
+fallback, Gemini CLI, takes the same free Gemini key from a gitignored
+`sample-app/.env`.
 
 ## Map
 
