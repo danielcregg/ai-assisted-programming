@@ -58,7 +58,7 @@ class Row:
     topic: str          # "Coding Agents"; empty on MCQ and reading-week rows
     deck: str | None    # the lecture's site folder (/<deck>/) and the stem of <deck>-lecture.md
     lab: str | None     # the lab's site folder (/labs/<lab>/); its source folder is <lab>_lab/
-    assessment: str     # "PA3 (4%)", "MCQ 1 (32%)", or empty
+    assessment: str     # "Practical Assessment Week 4 (4%)", "MCQ 1 (32%)", or empty
     notes: str
     dir: str            # its folder under lectures-and-labs/: week05, week06b-reading-week
 
