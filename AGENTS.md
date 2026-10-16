@@ -189,6 +189,24 @@ materially wrong by 2026.
   from the SDK, and the counts beside the try-it-now come from sending its
   prompt to hosted models: capture them again if the SDK pin or the prompt
   changes. Its diagrams are drawn shapes, not pictures.
+- **Coding Agents** (a PowerPoint deck since October 2026) — part 1 is
+  what an agent is: autonomy, perception, reasoning and action; agentic AI
+  against traditional automation and against generative AI; bots,
+  assistants and agents; the five textbook agent types (simple reflex,
+  model-based, goal-based, utility-based, learning); the core components
+  (LLM, memory, tools); the ReAct loop (thought, action, observation);
+  what agents are good for; and cloud agents that open pull requests,
+  with the review and the `@copilot` comment as the human oversight. That
+  spine is what the AI Agents questions in MCQ 1 test, so keep it. Part 2
+  is the **mechanism**: the ladder of authority (ask, edit, agent, cloud)
+  and what you review at each rung; say what done means and what must not
+  change; the loop sees only what it read, its edits land live and Stop
+  does not undo them; "make the test suite pass" against a stale test;
+  read the diff, not the summary. Every trace, file list, quoted report
+  and count on a slide comes from a real run (a short agent loop on
+  hosted models, and a coding-agent product): rerun the exhibits if a
+  claim or the models change. Tool and mode names are dated on the slide.
+  Its diagrams are drawn shapes, not pictures.
 - **CLI Coding Agents** — teach the **configuration model**, not
   a tour of tools: standing instructions (`AGENTS.md`), built-in and
   custom slash commands, and allow/ask/deny permissions, where deny wins
@@ -274,7 +292,7 @@ add a note.
   what another lecturer swaps) but is held to the identity rule like every
   other deck. `check_deck_portability.py` enforces both.
 
-### PowerPoint lectures (since September 2026: the overview, prompting, RAG and MCP lectures)
+### PowerPoint lectures (since September 2026: the overview, prompting, RAG, MCP and Coding Agents lectures)
 
 A week may be taught from a PowerPoint deck instead of a Marp one,
 `<topic>-lecture.pptx` (the module owner builds them with the
