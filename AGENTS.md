@@ -189,24 +189,32 @@ materially wrong by 2026.
   from the SDK, and the counts beside the try-it-now come from sending its
   prompt to hosted models: capture them again if the SDK pin or the prompt
   changes. Its diagrams are drawn shapes, not pictures.
-- **Coding Agents** (a PowerPoint deck since October 2026) — part 1 is
-  what an agent is: autonomy, perception, reasoning and action; agentic AI
-  against traditional automation and against generative AI; bots,
-  assistants and agents; the five textbook agent types (simple reflex,
-  model-based, goal-based, utility-based, learning); the core components
-  (LLM, memory, tools); the ReAct loop (thought, action, observation);
-  what agents are good for; and cloud agents that open pull requests,
-  with the review and the `@copilot` comment as the human oversight. That
-  spine is what the AI Agents questions in MCQ 1 test, so keep it. Part 2
-  is the **mechanism**: the ladder of authority (ask, edit, agent, cloud)
-  and what you review at each rung; say what done means and what must not
-  change; the loop sees only what it read, its edits land live and Stop
-  does not undo them; "make the test suite pass" against a stale test;
-  read the diff, not the summary. Every trace, file list, quoted report
-  and count on a slide comes from a real run (a short agent loop on
-  hosted models, and a coding-agent product): rerun the exhibits if a
-  claim or the models change. Tool and mode names are dated on the slide.
-  Its diagrams are drawn shapes, not pictures.
+- **Coding Agents** (a PowerPoint deck since October 2026, titled "AI
+  Agents" on its first slide) — four sections, each in its own colour,
+  with five question slides for the room and animations that build each
+  diagram. **What is an agent?** a chatbot against an agent, with
+  autonomy as the central trait; "agent" in the textbook sense (anything
+  that perceives and acts) against the 2026 sense; the five textbook agent
+  types (simple reflex, model-based, goal-based, utility-based, learning);
+  agentic AI against traditional automation (who chooses the next step);
+  the core components (LLM, memory, tools); and how big a job an agent
+  finishes alone, from METR's measurements. **How an agent thinks:** the
+  ReAct loop (thought, action, observation), a real run line by line, the
+  model asks while the loop acts, and the model decides when it is done.
+  **Agents at work:** editor, terminal and cloud; cloud agents that open
+  pull requests, with the review and the `@copilot` comment as the human
+  oversight; what agents are good for. Those topics are what the AI Agents
+  questions in MCQ 1 test, so keep them. **Keeping agents honest:** the
+  ladder of autonomy (ask, edit, agent, cloud) and what you review at each
+  rung; outcomes, not steps; say what must not change; "make the test
+  suite pass" against an out-of-date test, and a request that gives the
+  agent a way out that isn't green; it reads beyond the folder it was
+  given; review the diff, not the summary, and commit first because Stop
+  does not undo. Every trace, file list, quoted report and count on a
+  slide comes from a real run (a short agent loop on hosted models, and a
+  coding-agent product) or from METR's published data: rerun or re-read
+  them if a claim or the models change. Tool and mode names are dated on
+  the slide. Its diagrams are drawn shapes, not pictures.
 - **CLI Coding Agents** — teach the **configuration model**, not
   a tour of tools: standing instructions (`AGENTS.md`), built-in and
   custom slash commands, and allow/ask/deny permissions, where deny wins
@@ -295,9 +303,11 @@ add a note.
 ### PowerPoint lectures (since September 2026: the overview, prompting, RAG, MCP and Coding Agents lectures)
 
 A week may be taught from a PowerPoint deck instead of a Marp one,
-`<topic>-lecture.pptx` (the module owner builds them with the
+`<topic>-lecture.pptx` (the module owner builds most of them with the
 powerpoint-maker skill: code in dark syntax-coloured boxes, prompts and
-replies in labelled boxes). Everything above about content still holds:
+replies in labelled boxes. The Coding Agents deck is the exception: it is
+drawn with pptxgenjs, so edit it in PowerPoint rather than rebuilding it
+with the skill). Everything above about content still holds:
 the deck flow below, portability, no speaker notes.
 
 **The deck is the only source, and nothing derived from it is committed.**
