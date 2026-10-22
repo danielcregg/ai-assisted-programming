@@ -81,7 +81,7 @@
       "id": "prompting-006",
       "difficulty": "medium",
       "type": "concept",
-      "question": "Chain-of-thought prompting is most useful when the task is:",
+      "question": "Asking a model to write out its steps is most useful when the task is:",
       "code": null,
       "options": [
         "Long, so the reasoning fills out the response",
@@ -90,7 +90,7 @@
         "Repetitive, where the same transformation is applied many times"
       ],
       "answer": 1,
-      "explanation": "Asking for the steps helps when correctness depends on a chain of intermediate results — debugging, multi-stage transformations, arithmetic. For a one-step lookup or a purely creative task it adds length without improving the answer."
+      "explanation": "The steps matter when correctness depends on a chain of intermediate results — debugging, multi-stage transformations, arithmetic. Current reasoning models already work through such problems before they answer, so adding 'think step by step' barely changes their accuracy; what asking still gives you is the steps and assumptions written out, where you can check them. For a one-step lookup or a purely creative task it only adds length."
     },
     {
       "id": "prompting-007",
