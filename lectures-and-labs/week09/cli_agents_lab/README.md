@@ -543,7 +543,7 @@ Optional — the sections above are the two-hour path.
 - **MCP servers.** `/mcp` lists the servers your agent can use and adds
   new ones. Connect the server you built in the MCP lab and ask the agent
   to use it.
-- **Delegate.** If your plan includes the cloud coding agent, `/delegate`
+- **Delegate.** If your plan includes the Copilot cloud agent, `/delegate`
   in Copilot CLI hands it a task; it works on a branch and opens a pull
   request. When an agent works while you are not watching, what does
   review even mean?

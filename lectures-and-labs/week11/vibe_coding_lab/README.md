@@ -40,11 +40,18 @@ Create a `REFLECTION.md` in this folder now; you will write into it
 throughout.
 
 DIY 2 and DIY 4 use the Copilot chat in your Codespace. Open the chat panel
-with `Ctrl+Alt+I` (`Ctrl+Cmd+I` on a Mac). Every step that talks to the
-assistant names a **mode**: **Plan** reads and thinks but changes nothing;
-**Interactive** reads your files and asks before it runs a command or
-changes a file. This lab never needs **Autopilot**. *Fresh conversation*
-means press the `+` at the top of the chat panel first.
+with `Ctrl+Alt+I` (`Ctrl+Cmd+I` on a Mac) and choose **Copilot** as the
+session under the chat input (it may say **Local** currently), as in the
+setup lab. Every step that talks to the assistant then says what to pick
+in the agent picker, the control that first says **Agent**: **Ask** reads
+your files and answers, but cannot edit a file or run a command that
+changes anything; **Agent** edits files straight away and runs commands.
+Leave the mode and permissions controls on their defaults, **Interactive**
+and **Manual permissions**, and **Agent** asks before it runs a command
+(read-only ones such as `ls` excepted). **Autopilot** and **Allow all**
+stop it asking; this lab never needs them. If your picker uses other
+names, look for the read-only one and the one that asks first. *Fresh
+conversation* means press the `+` at the top of the chat panel first.
 
 > **Tool names change.** The three used here are examples of a *category*,
 > not a prescription. If one has changed name, pricing or shut down, pick
@@ -113,9 +120,9 @@ Pick **one** of the three and spend fifteen minutes in its source.
    - Is user input validated anywhere before being stored or displayed?
    - If this held real people's data, what would worry you?
 3. Find **one line you genuinely cannot explain.** Paste it.
-4. Fresh conversation, **Plan**, in the Copilot chat: paste the line and
+4. Fresh conversation, **Ask**, in the Copilot chat: paste the line and
    ask what it does. Did the explanation match what you had assumed?
-5. Fresh conversation, **Plan**: paste the whole file and ask directly:
+5. Fresh conversation, **Ask**: paste the whole file and ask directly:
 
    > Review this code for security vulnerabilities as a security engineer
    > would.
@@ -187,16 +194,16 @@ done both.
    - What it explicitly does **not** do
    - The data it stores, and its shape
    - Three acceptance criteria you could actually test
-2. Open `spec.md`. Fresh conversation, **Plan**, in the Copilot chat:
+2. Open `spec.md`. Fresh conversation, **Ask**, in the Copilot chat:
 
    > Here is spec.md. Give me a plan: which files you will create and what
    > each one does. Do not write code yet.
 
 3. Read the plan against your spec. Correct it where it drifted, in the
    same conversation.
-4. Only now switch the mode to **Interactive**, stay in the same
+4. Only now switch the agent picker to **Agent**, stay in the same
    conversation, and ask it to build the plan in a new folder called
-   `todo-spec` next to this README. Allow the changes it asks for.
+   `todo-spec` next to this README. Allow the commands it asks to run.
 5. Check the result against your three acceptance criteria.
 
 **What you should have**

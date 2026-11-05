@@ -445,16 +445,22 @@ example.
   on something the student checks themselves (`hasattr`, `wc -l`,
   running the file, a shipped harness) rather than on the model failing.
   A lab that depends on the model failing has a shelf life.
-- **Say which chat mode, every time — and know there is no no-tools
-  mode.** In a Codespace the Copilot chat offers **Interactive** (reads
-  freely, asks before it runs a command or changes a file), **Plan**
-  (read-only) and **Autopilot** (never asks); the "Ask" role that the VS
-  Code docs describe is not offered by the Copilot harness. Every mode
-  can read the workspace, so an answer "from memory" is asked for in the
-  prompt ("without using any tools"), never selected in a picker, and the
-  step watches whether the instruction was obeyed. A step that talks to
-  the assistant names the mode and says when to start a fresh
-  conversation.
+- **Say which agent, every time — and know there is no no-tools
+  choice.** In a Codespace, with **Copilot** chosen as the session, the
+  agent picker offers **Ask** (reads and answers; it has no tool that
+  edits a file or runs a command) and **Agent** (edits files straight
+  away, and asks before it runs a command). Agent's mode and permissions
+  controls stay on their defaults, **Interactive** and **Manual
+  permissions**; **Autopilot** and **Allow all** stop it asking. **Plan**
+  is not a read-only mode: its review card offers to implement the plan
+  with Autopilot. Ask and Agent can both read the workspace, so an answer
+  "from memory" is asked for in the prompt ("without using any tools"),
+  never selected in a picker, and the step watches whether the
+  instruction was obeyed. A step that talks to the assistant names
+  **Ask** or **Agent** and says when to start a fresh conversation, and a
+  lab's Getting started says what to look for if the names change: the
+  read-only one and the one that asks first. These names were read from
+  VS Code 1.145.0 (November 2026); check them before a lab runs.
 - **The why lives in the hint, short.** Steps stay bare and imperative;
   the mechanism behind the surprise goes in the `<details>` hint, a
   paragraph or two, so a student who wants it has it and one who does not
