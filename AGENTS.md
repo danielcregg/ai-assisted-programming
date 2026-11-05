@@ -260,6 +260,17 @@ materially wrong by 2026.
   covers the context window, `/compact` and how a custom command is
   assembled. Every verdict and output on a slide comes from the lab's
   checker and sample app: rerun them if either changes.
+- **CI/CD & Evals** (a PowerPoint deck since November 2026, in the Security deck's design) — part 1 keeps
+  what the CI/CD questions in MCQ 2 test: CI against delivery against deployment (one human approval), a
+  workflow as one YAML file in `.github/workflows/` with a trigger, jobs, steps and a fresh runner, checks
+  ordered by what you cannot undo, GitHub's secret scanning, Dependabot and CodeQL with Copilot Autofix, and
+  Copilot around a pipeline (writing the workflow, explaining a failed run, reviewing a pull request, the
+  cloud agent). AI steps inside a workflow are taught with the date: `actions/ai-inference@v1` called GitHub
+  Models, retired on 30 July 2026. Then evals: a rate not a result, the assertion ladder, properties first and
+  the judge last with its biases. Part 2 follows one push step by step, shows why first runs fail and why green
+  proves only exit codes, and scores a real extraction eval. Every output on a slide is real: the lab's own
+  test, red then green, and GLM runs on the lab's articles and twelve support messages (0/36 JSON with the
+  bare prompt, 27/36 with the strict one). Rerun them if the lab or the models change.
 - **Vibe Coding** — run vibe coding **against**
   spec-driven development rather than demonstrating one. Carry the cost
   data (see below) and the two terms students will meet everywhere:
@@ -338,14 +349,14 @@ add a note.
   what another lecturer swaps) but is held to the identity rule like every
   other deck. `check_deck_portability.py` enforces both.
 
-### PowerPoint lectures (since September 2026: the overview, prompting, RAG, MCP, Coding Agents, Security and CLI Coding Agents lectures)
+### PowerPoint lectures (since September 2026: the overview, prompting, RAG, MCP, Coding Agents, Security, CLI Coding Agents and CI/CD & Evals lectures)
 
 A week may be taught from a PowerPoint deck instead of a Marp one,
 `<topic>-lecture.pptx` (the module owner builds most of them with the
 powerpoint-maker skill: code in dark syntax-coloured boxes, prompts and
 replies in labelled boxes. The Coding Agents deck is the exception: it is
 drawn with pptxgenjs, so edit it in PowerPoint rather than rebuilding it
-with the skill. The Security and CLI Coding Agents decks are drawn in the design of the module
+with the skill. The Security, CLI Coding Agents and CI/CD & Evals decks are drawn in the design of the module
 owner's reworked MCP deck: its master and dot-grid background, section
 colours, progress bar, gradient icon circles and question slides, all as
 editable shapes, so edit them in PowerPoint too). Everything above about
