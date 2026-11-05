@@ -271,10 +271,20 @@ materially wrong by 2026.
   proves only exit codes, and scores a real extraction eval. Every output on a slide is real: the lab's own
   test, red then green, and GLM runs on the lab's articles and twelve support messages (0/36 JSON with the
   bare prompt, 27/36 with the strict one). Rerun them if the lab or the models change.
-- **Vibe Coding** — run vibe coding **against**
-  spec-driven development rather than demonstrating one. Carry the cost
-  data (see below) and the two terms students will meet everywhere:
-  **comprehension debt** and **haunted codebases**.
+- **Vibe Coding** (a PowerPoint deck since November 2026, in the Security deck's design) — run vibe coding
+  **against** spec-driven development rather than demonstrating one. Carry the cost data (see below) and the
+  two terms students will meet everywhere: **comprehension debt** and **haunted codebases**. Part 1 keeps what
+  the Vibe Coding questions in MCQ 2 test: the definition and its loop (describe, generate, run, refine,
+  accepting output without deep review), the two 2025 changes that made it workable (fewer logic errors,
+  whole-codebase context) and the compiler analogy, where it fits, prompt-first builders against an
+  agent-first IDE (Antigravity: you manage agents and approve their artifacts), Firebase Studio's exportable
+  output and Data Connect, taught with the date (closed to new users June 2026, shuts 22 March 2027), the four
+  risks of keeping vibe-coded code, spec-driven development as the counter-trend, what each mode verifies,
+  choosing the mode per task, and the developer's role moving from typing code to directing it. Part 2 shows
+  why every unstated decision still gets made, follows one feature down two routes step by step, and measures
+  the debt. The gap counts and plan checks on its slides are real GLM runs on the lab's to-do app and spec
+  (21 to 38 open decisions for "add a due date"; 10 of 10 plans kept old tasks loading): rerun them if the lab
+  or the models change.
 - **Every deck** — the assessment is in-person, so decks may be blunt
   about the limits of AI-generated code. See `module/module-overview.md`
   under "Currency" for the module's stated position.
@@ -349,14 +359,14 @@ add a note.
   what another lecturer swaps) but is held to the identity rule like every
   other deck. `check_deck_portability.py` enforces both.
 
-### PowerPoint lectures (since September 2026: the overview, prompting, RAG, MCP, Coding Agents, Security, CLI Coding Agents and CI/CD & Evals lectures)
+### PowerPoint lectures (since September 2026: the overview, prompting, RAG, MCP, Coding Agents, Security, CLI Coding Agents, CI/CD & Evals and Vibe Coding lectures)
 
 A week may be taught from a PowerPoint deck instead of a Marp one,
 `<topic>-lecture.pptx` (the module owner builds most of them with the
 powerpoint-maker skill: code in dark syntax-coloured boxes, prompts and
 replies in labelled boxes. The Coding Agents deck is the exception: it is
 drawn with pptxgenjs, so edit it in PowerPoint rather than rebuilding it
-with the skill. The Security, CLI Coding Agents and CI/CD & Evals decks are drawn in the design of the module
+with the skill. The Security, CLI Coding Agents, CI/CD & Evals and Vibe Coding decks are drawn in the design of the module
 owner's reworked MCP deck: its master and dot-grid background, section
 colours, progress bar, gradient icon circles and question slides, all as
 editable shapes, so edit them in PowerPoint too). Everything above about
