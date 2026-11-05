@@ -84,7 +84,7 @@ only.
 | — | Reading week | [details](lectures-and-labs/week06b-reading-week/README.md) | — |
 | **➡️ 7** | **MCQ 1** (32%) · held during the lab slot | [details](lectures-and-labs/week07/README.md) · [what it covers](mcq/mcq1/README.md) | — |
 | 8 | Security of AI-Generated Code | [slides](https://danielcregg.is-a.dev/ai-assisted-programming/security/) | [lab](lectures-and-labs/week08/security_lab/README.md) |
-| 9 | CLI Coding Agents | [slides](lectures-and-labs/week09/cli-agents-lecture.md) | [lab](lectures-and-labs/week09/cli_agents_lab/README.md) |
+| 9 | CLI Coding Agents | [slides](https://danielcregg.is-a.dev/ai-assisted-programming/cli-agents/) | [lab](lectures-and-labs/week09/cli_agents_lab/README.md) |
 | 10 | CI/CD & Evals | [slides](lectures-and-labs/week10/cicd-lecture.md) | [lab](lectures-and-labs/week10/cicd_lab/README.md) |
 | 11 | Vibe Coding & Spec-Driven | [slides](lectures-and-labs/week11/vibe-coding-lecture.md) | [lab](lectures-and-labs/week11/vibe_coding_lab/README.md) |
 | 12 | **MCQ 2** (32%) · held during the lab slot | [details](lectures-and-labs/week12/README.md) · [what it covers](mcq/mcq2/README.md) | — |
