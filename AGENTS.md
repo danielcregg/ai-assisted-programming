@@ -468,11 +468,12 @@ example.
 - **Sized to two hours.** Let the exercises run to about 110 minutes
   including Codespace start-up.
 
-Labs written before this rule (agents, vibe-coding) still carry
-`REFLECTION.md` exercises; bring each into line when it is next edited,
-keeping the formula above and `check_lab_structure.py` green. The
-prompting lab was rewritten to it after the setup lab, with one `check.py`
-that makes every comparison in the lab.
+Every lab now follows this rule. The prompting lab was rewritten to it
+after the setup lab, with one `check.py` that makes every comparison in
+the lab; the agents lab followed on 20 October 2026, and the security,
+CLI agents, CI/CD and vibe coding labs on 5 November 2026. A new lab, or
+an edit to an old one, keeps to it and keeps `check_lab_structure.py`
+green.
 
 ## Editing rules
 
