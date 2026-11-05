@@ -43,11 +43,19 @@ place so it stops being your problem.
    python check_setup.py
    ```
 
-4. Open the chat panel with `Ctrl+Alt+I` (`Ctrl+Cmd+I` on a Mac). Every
-   step that talks to the assistant names a **mode**: **Interactive** reads
-   your files and asks before it runs a command or changes a file;
-   **Plan** reads and thinks but changes nothing. This lab never needs
-   **Autopilot**.
+4. Open the chat panel with `Ctrl+Alt+I` (`Ctrl+Cmd+I` on a Mac). Look
+   at the row of controls under the chat input and choose **Copilot** as
+   the session (it may say **Local** currently), as in the setup lab.
+   Every step that talks to the assistant then says what to pick in the
+   agent picker, the control that first says **Agent**: **Ask** reads
+   your files and answers, but cannot edit a file or run a command that
+   changes anything; **Agent** edits files straight away and runs
+   commands. Leave the mode and permissions controls on their defaults,
+   **Interactive** and **Manual permissions**, and **Agent** asks before
+   it runs a command (read-only ones such as `ls` excepted).
+   **Autopilot** and **Allow all** stop it asking; this lab never needs
+   them. If your picker uses other names, look for the read-only one and
+   the one that asks first.
 
 *Fresh conversation* means press the `+` at the top of the chat panel
 first.
@@ -71,7 +79,7 @@ a function of what you asked for — which makes it something you control.
 
 ### DIY 1: Make it fail, then make it notice
 
-1. Fresh conversation, **Interactive**. Ask your AI assistant, with no
+1. Fresh conversation, **Agent**. Ask your AI assistant, with no
    security framing at all:
    *"Write a Python function that looks up a user in a SQLite database by
    username and returns their row."*
@@ -79,7 +87,7 @@ a function of what you asked for — which makes it something you control.
    itself, rename that one.
 3. Read it. Does it build the SQL by string formatting or f-string? Does
    it validate anything?
-4. Fresh conversation, **Plan**. Now ask the **same assistant**:
+4. Fresh conversation, **Ask**. Now ask the **same assistant**:
    *"Review this code as a security engineer. What could an attacker do?"*
    Paste the code.
 5. Record both the code and the review in `findings.md`.
@@ -98,7 +106,7 @@ attack.
 Which one you get is a roll: the same prompt does not reliably give the
 same safety. If step 1 gave you `?` placeholders, you got a good roll — say
 so in `findings.md`, then re-run the prompt two or three more times, each
-in a fresh conversation in **Interactive**, and record how many of the
+in a fresh conversation in **Agent**, and record how many of the
 attempts were safe. That variability *is* the finding.
 
 You do not have to take the assistant's word for what it wrote. From this
@@ -135,7 +143,7 @@ It was generated. It is not safe.
    no validation.
 3. For each, write down what an attacker could send.
 4. Fix all three. You may use an assistant (fresh conversation,
-   **Interactive**, with `vulnerable_app.py` open) — but you must be able
+   **Agent**, with `vulnerable_app.py` open) — but you must be able
    to explain each fix.
 5. Re-run and confirm the app still works.
 
@@ -189,9 +197,9 @@ recorded as soon as it was registered.
 
 ### DIY 3: Verify before you install
 
-1. Fresh conversation, **Plan**. Ask an assistant: *"Give me a
-   requirements.txt for a Python project that parses PDFs, does sentiment
-   analysis, and caches results in Redis."*
+1. Fresh conversation, **Ask**: *"Give me a requirements.txt for a
+   Python project that parses PDFs, does sentiment analysis, and caches
+   results in Redis."*
 2. Save it as `suspect-requirements.txt`.
 3. **Do not install it.**
 4. Complete `verify_deps.py` so that it reads a requirements file and, for
@@ -221,13 +229,14 @@ exists and 404 if it does not. `urllib.request` is enough; catch
 Strip version specifiers (`redis>=5.0` → `redis`) before you look a name
 up, and skip blank lines and `#` comments.
 
-Step 1 is in **Plan** on purpose: it changes nothing, so it can neither
-create the file nor run `pip install`. In **Interactive** it would ask
-first, and in **Autopilot** it would not.
+Step 1 is in **Ask** on purpose: it changes nothing, so it can neither
+create the file nor run `pip install`. **Agent** would create the file
+straight away and ask before it ran `pip install`; with **Autopilot** or
+**Allow all** it would not ask.
 
 If every package in your file exists, that is a valid result — record it.
 Then try a deliberately odd prompt (a very niche task), in a fresh
-conversation in **Plan**, and see whether the rate changes.
+conversation in **Ask**, and see whether the rate changes.
 
 </details>
 
