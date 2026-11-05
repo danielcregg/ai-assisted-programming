@@ -219,6 +219,26 @@ materially wrong by 2026.
   coding-agent product) or from METR's published data: rerun or re-read
   them if a claim or the models change. Tool and mode names are dated on
   the slide. Its diagrams are drawn shapes, not pictures.
+- **Security** (a PowerPoint deck since November 2026) — nine coloured
+  sections and six question slides for the room (four options, then a
+  click that marks the right one on the slide; no try-it-now). Part 1 is
+  what goes wrong: the benchmark rate and its condition (no security
+  instruction given), the four ordinary failures, stating the requirement,
+  SQL injection and the placeholder fix, hallucinated packages and
+  slopsquatting (names repeat; the tool, not you, made the mistake; ask the
+  registry by bare name before installing), secrets (no default; rotate a
+  logged key), prompt injection (data, never instructions; defences are
+  provisional), and scanners on every push (history with `fetch-depth: 0`;
+  ask for an attack in a new conversation). Part 2 is why the fixes work:
+  two authors in one string, escaping against binding, names that cannot
+  be bound, the shell's and ping's own parsers, allow-lists, taint
+  tracking and what each scanner cannot see, no second channel for a
+  prompt, a document that closes its delimiter, limiting a fooled model,
+  and one install followed step by step. That spine is what the Security
+  questions in MCQ 2 test, so keep it. Every output on a slide is real: the
+  SQLite and shell runs, PyPI's answers, and the counts from sending the
+  lab's prompts and document to hosted models. Rerun them if a claim, the
+  lab or the models change.
 - **CLI Coding Agents** — teach the **configuration model**, not
   a tour of tools: standing instructions (`AGENTS.md`), built-in and
   custom slash commands, and allow/ask/deny permissions, where deny wins
@@ -304,15 +324,18 @@ add a note.
   what another lecturer swaps) but is held to the identity rule like every
   other deck. `check_deck_portability.py` enforces both.
 
-### PowerPoint lectures (since September 2026: the overview, prompting, RAG, MCP and Coding Agents lectures)
+### PowerPoint lectures (since September 2026: the overview, prompting, RAG, MCP, Coding Agents and Security lectures)
 
 A week may be taught from a PowerPoint deck instead of a Marp one,
 `<topic>-lecture.pptx` (the module owner builds most of them with the
 powerpoint-maker skill: code in dark syntax-coloured boxes, prompts and
 replies in labelled boxes. The Coding Agents deck is the exception: it is
 drawn with pptxgenjs, so edit it in PowerPoint rather than rebuilding it
-with the skill). Everything above about content still holds:
-the deck flow below, portability, no speaker notes.
+with the skill. The Security deck is drawn in the design of the module
+owner's reworked MCP deck: its master and dot-grid background, section
+colours, progress bar, gradient icon circles and question slides, all as
+editable shapes, so edit it in PowerPoint too). Everything above about
+content still holds: the deck flow below, portability, no speaker notes.
 
 **The deck is the only source, and nothing derived from it is committed.**
 Edit it any way you like (PowerPoint, PowerPoint for the web, or
