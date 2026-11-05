@@ -239,13 +239,27 @@ materially wrong by 2026.
   SQLite and shell runs, PyPI's answers, and the counts from sending the
   lab's prompts and document to hosted models. Rerun them if a claim, the
   lab or the models change.
-- **CLI Coding Agents** — teach the **configuration model**, not
+- **CLI Coding Agents** (a PowerPoint deck since November 2026, in the
+  Security deck's design) — teach the **configuration model**, not
   a tour of tools: standing instructions (`AGENTS.md`), built-in and
   custom slash commands, and allow/ask/deny permissions, where deny wins
   and anything unlisted is asked. Tool names, plans and matching rules
   change every few months, so the deck teaches the columns and dates the
   cells. The hook is the July 2025 Gemini CLI incident: a failed `mkdir`
-  nobody checked, then moves that overwrote the files one by one.
+  nobody checked, then moves that overwrote the files one by one. Part 1
+  also keeps what the CLI Coding Agents questions in MCQ 2 test: the eras
+  from autocomplete to agents (the 2022-23 chatbot never saw your
+  project), tool use as the change that made agents, copilot against
+  assistant against agent, an agent's traits (autonomy, multi-step
+  reasoning, tool use, context awareness, memory), an IDE assistant
+  against a terminal agent, the four terminal agents and which fits which
+  team (two of them open source), Codex's three permission modes,
+  invented APIs, and the shift from writing code to reviewing it, with
+  over-reliance as the learning risk. Part 2 judges commands with the
+  lab's `policy_check.py`, follows one headless run step by step, and
+  covers the context window, `/compact` and how a custom command is
+  assembled. Every verdict and output on a slide comes from the lab's
+  checker and sample app: rerun them if either changes.
 - **Vibe Coding** — run vibe coding **against**
   spec-driven development rather than demonstrating one. Carry the cost
   data (see below) and the two terms students will meet everywhere:
@@ -324,17 +338,17 @@ add a note.
   what another lecturer swaps) but is held to the identity rule like every
   other deck. `check_deck_portability.py` enforces both.
 
-### PowerPoint lectures (since September 2026: the overview, prompting, RAG, MCP, Coding Agents and Security lectures)
+### PowerPoint lectures (since September 2026: the overview, prompting, RAG, MCP, Coding Agents, Security and CLI Coding Agents lectures)
 
 A week may be taught from a PowerPoint deck instead of a Marp one,
 `<topic>-lecture.pptx` (the module owner builds most of them with the
 powerpoint-maker skill: code in dark syntax-coloured boxes, prompts and
 replies in labelled boxes. The Coding Agents deck is the exception: it is
 drawn with pptxgenjs, so edit it in PowerPoint rather than rebuilding it
-with the skill. The Security deck is drawn in the design of the module
+with the skill. The Security and CLI Coding Agents decks are drawn in the design of the module
 owner's reworked MCP deck: its master and dot-grid background, section
 colours, progress bar, gradient icon circles and question slides, all as
-editable shapes, so edit it in PowerPoint too). Everything above about
+editable shapes, so edit them in PowerPoint too). Everything above about
 content still holds: the deck flow below, portability, no speaker notes.
 
 **The deck is the only source, and nothing derived from it is committed.**
