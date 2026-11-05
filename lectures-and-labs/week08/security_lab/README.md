@@ -90,28 +90,34 @@ a function of what you asked for — which makes it something you control.
 4. Fresh conversation, **Ask**. Now ask the **same assistant**:
    *"Review this code as a security engineer. What could an attacker do?"*
    Paste the code.
-5. Record both the code and the review in `findings.md`.
+5. Check the review against a scanner that has no stake in the code.
+   From this folder:
+
+   ```bash
+   bandit lookup_naive.py -ll
+   ```
 
 **What you should have**
 
-`findings.md` containing the original function, the review, and one
-sentence in your own words naming the vulnerability class, or saying the
-review found none. Step 1 gives one of two results, and both are the
-exercise: SQL built by string formatting, which step 4 should name as SQL
-injection, or SQL with `?` placeholders, which leaves the review little to
-attack.
+The function, the review and bandit's report, all on screen. Step 1 gives
+one of two results, and both are the exercise: SQL built by string
+formatting, which the review should name as SQL injection and bandit
+reports as B608, or SQL with `?` placeholders, which leaves the review
+little to attack and bandit nothing to report.
 
 <details><summary>Hint</summary>
 
 Which one you get is a roll: the same prompt does not reliably give the
-same safety. If step 1 gave you `?` placeholders, you got a good roll — say
-so in `findings.md`, then re-run the prompt two or three more times, each
-in a fresh conversation in **Agent**, and record how many of the
-attempts were safe. That variability *is* the finding.
+same safety. If step 1 gave you `?` placeholders, you got a good roll, so
+go hunting for a bad one. Re-run the prompt two or three more times, each
+in a fresh conversation in **Agent**, save the answers as `lookup_2.py`,
+`lookup_3.py` and so on, and run `bandit lookup_*.py -ll` over them all.
+How many of the attempts were safe? That variability *is* the finding.
 
-You do not have to take the assistant's word for what it wrote. From this
-folder, `bandit lookup_naive.py -ll` (bandit is already in the Codespace)
-reports B608 for SQL built from strings and nothing for `?` placeholders.
+Bandit is already in the Codespace. B608 is its check for SQL built from
+strings, and a query with `?` placeholders gives it nothing to report. It
+reads the code, not the assistant's account of the code, so a confident
+review cannot talk it round.
 
 Ask step 4 in a **new conversation**. In the same thread the assistant has
 already committed to that code being good, and tends to defend it.
@@ -141,16 +147,20 @@ It was generated. It is not safe.
 
 2. Find **three** places where user input reaches storage or output with
    no validation.
-3. For each, write down what an attacker could send.
+3. For each, play the attacker: add a line to `main()`, just before
+   `conn.close()`, that sends what an attacker would send there, and run
+   the file.
 4. Fix all three. You may use an assistant (fresh conversation,
    **Agent**, with `vulnerable_app.py` open) — but you must be able
    to explain each fix.
-5. Re-run and confirm the app still works.
+5. Re-run it with your attack lines still in `main()`.
 
 **What you should have**
 
-Three fixes, and in `findings.md` a short table: the input, what an
-attacker could send, and what your fix does about it.
+Before your fixes, each attack line visibly misbehaves: a crash, someone
+else's note, or HTML that a browser would run. After them, the same lines
+either stop with a clear error your code raises or go through as plain
+text, and the app still prints alice's notes and the rendered note.
 
 <details><summary>Hint</summary>
 
@@ -158,10 +168,15 @@ Look for anywhere a value taken from a request is used without being
 examined first: written straight into a data structure, concatenated into
 a query, or returned in a response body.
 
-A quick probe: in `main()`, add a note whose title contains an apostrophe
-— `add_note(conn, "alice", "O'Brien", "x")` — and run it. The whole program falls over with a SQL syntax error. That
-crash is the tell that the input reached the query unescaped, and the
-hole an attacker uses is the same one.
+A first attack line: in `main()`, add a note whose title contains an
+apostrophe — `add_note(conn, "alice", "O'Brien", "x")` — and run it. The
+whole program falls over with a SQL syntax error. That crash is the tell
+that the input reached the query unescaped, and the hole an attacker uses
+is the same one. Two more shapes to try: a search term that closes the
+quote and adds a condition of its own,
+`print(search_notes(conn, "alice", "%' OR owner = 'bob' --"))`, which hands
+alice bob's private note, and a title that is HTML,
+`print(render_note("<script>alert(1)</script>", "x"))`.
 
 "Validate" means decide what you *will* accept and reject everything else
 — a length limit, a type, an allowed character set. A blocklist of bad
@@ -234,8 +249,8 @@ create the file nor run `pip install`. **Agent** would create the file
 straight away and ask before it ran `pip install`; with **Autopilot** or
 **Allow all** it would not ask.
 
-If every package in your file exists, that is a valid result — record it.
-Then try a deliberately odd prompt (a very niche task), in a fresh
+If every package in your file exists, that is a valid result too. Then
+try a deliberately odd prompt (a very niche task), in a fresh
 conversation in **Ask**, and see whether the rate changes.
 
 </details>
@@ -274,14 +289,22 @@ is about the failure mode where the assistant helps you do it wrong.
    rm lectures-and-labs/week08/security_lab/scratch_key.py
    ```
 
-   Then write the correct version, reading the key from the
-   environment.
+6. Write the correct version in this lab's folder as `key_from_env.py`,
+   reading the key from the environment, and run it once without the
+   variable and once with it:
+
+   ```bash
+   cd lectures-and-labs/week08/security_lab
+   python key_from_env.py
+   OPENAI_API_KEY=not-a-real-key python key_from_env.py
+   ```
 
 **What you should have**
 
-In `findings.md`: the audit's output (already redacted), one sentence on
-why a CI log is a bad place to print a secret, and your corrected
-environment-variable version.
+The audit's report on `scratch_key.py`, with the value redacted, and your
+`key_from_env.py` stopping with a `KeyError` when the variable is missing
+but running when it is set. If it carried on without the key, read the
+hint.
 
 <details><summary>Hint</summary>
 
@@ -322,14 +345,15 @@ reasoned about, never a source of authority.**
    instruction. Observe what happens.
 4. Change the **system prompt** so the model treats document content as
    data only, and re-run.
-5. Write one further injection of your own that defeats your fix, or
-   convince yourself it holds.
+5. Try to defeat your own fix: write an injection of your own as
+   `documents/bypass.txt` and run the summariser on it.
 
 **What you should have**
 
-In `findings.md`: what the poisoned document did before your fix, the
-wording you used to fix it, and either your successful bypass or a short
-argument for why it holds.
+`[model obeyed the document]` for `poisoned.txt` before your fix and
+`[summary] …` after it, with `clean.txt` summarised both times. Your
+`bypass.txt` either gets `[model obeyed the document]` past the fix or it
+does not yet; try another shape before you decide the fix holds.
 
 <details><summary>Hint</summary>
 
@@ -404,8 +428,8 @@ the checks are the same, only who runs them changes.
 
 **What you should have**
 
-A green (or informatively red) `security` run in your Actions tab, and in
-`findings.md` one sentence on the first finding and your judgement of it.
+A green (or informatively red) `security` run in your Actions tab, with
+its first finding opened and judged: real, or noise.
 
 <details><summary>Hint</summary>
 
