@@ -320,15 +320,22 @@ benchmark with New York University's 2022 study of GitHub Copilot's code.
   keypress in the HTML presentation), `- ` = shown immediately. Fragment
   build-up slides; leave reference slides (agendas, summaries, tables)
   immediate.
-### No speaker notes: every slide stands on its own
+### Every slide stands on its own; a plain-English note may sit below it
 
-Decks carry **no speaker notes**, in PowerPoint's notes pane or as
-`<!-- Speaker notes: ... -->` comments in a Marp deck. The module owner
-never used them, and all 393 were removed on 1 October 2026. What a slide
-means is on the slide: a reader with only the slide in front of them,
-student or assistant, must be able to follow it. If a point needs
-explaining, explain it on the slide or give it a slide of its own; do not
-add a note.
+What a slide means is on the slide: a reader with only the slide in front
+of them, student or assistant, must be able to follow it. If a point needs
+explaining, explain it on the slide or give it a slide of its own.
+
+Since 8 November 2026 a PowerPoint deck may also carry a speaker note under
+each slide, at the module owner's request; the Security deck has one under
+every slide. A note says in plain English what the slide is about and the
+point the slide gets across, and a question slide's note also gives the
+answer and why. A note repeats and explains its slide and never holds
+anything the slide needs: the site shows only the slides' own text
+(`scripts/deck_text.py` does not read notes). Notes follow every rule for
+slide text below, portability included. The other decks have no notes: the
+393 older ones went unused and were removed on 1 October 2026, and Marp
+decks carry no `<!-- Speaker notes: ... -->` comments.
 
 Write every slide in plain English for a student who missed the lecture and
 reads the deck alone. The title states the point in plain words. Every
@@ -358,7 +365,8 @@ with the skill. The Security deck is drawn in the design of the module
 owner's reworked MCP deck: its master and dot-grid background, section
 colours, progress bar, gradient icon circles and question slides, all as
 editable shapes, so edit it in PowerPoint too). Everything above about
-content still holds: the deck flow below, portability, no speaker notes.
+content still holds: the deck flow below, portability, and slides that
+stand on their own.
 
 **The deck is the only source, and nothing derived from it is committed.**
 Edit it any way you like (PowerPoint, PowerPoint for the web, or

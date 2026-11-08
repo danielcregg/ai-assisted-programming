@@ -125,8 +125,8 @@ own. They recur through the labs, so you meet each one more than once:
   markdown) or `<topic>-lecture.pptx`, the PowerPoint deck as the only
   source, with nothing derived from it committed (the site build and the
   gates read it through `scripts/deck_text.py`); the lab is
-  `<topic>_lab/`. Decks carry no speaker notes: every slide stands on its
-  own. The week number names the
+  `<topic>_lab/`. Every slide stands on its own; the Security deck also
+  has a plain-English speaker note under each slide. The week number names the
   folder and nothing else; the site keeps topic addresses, taken from the
   schedule. All ten decks are written. Every deck is
   self-contained and names no lecturer or institution, so any week can be
