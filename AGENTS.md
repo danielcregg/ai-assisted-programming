@@ -223,19 +223,23 @@ materially wrong by 2026.
   sections and six question slides for the room (four options, then a
   click that marks the right one on the slide; no try-it-now). Part 1 is
   what goes wrong: the benchmark rate and its condition (no security
-  instruction given), the four ordinary failures, stating the requirement,
+  instruction given), the four ordinary failures, people with and without an
+  assistant on the same tasks (neither group safe by default), stating the requirement,
   SQL injection and the placeholder fix, hallucinated packages and
   slopsquatting (names repeat; the tool, not you, made the mistake; ask the
   registry by bare name before installing), secrets (no default; rotate a
   logged key), prompt injection (data, never instructions; defences are
-  provisional), and scanners on every push (history with `fetch-depth: 0`;
-  ask for an attack in a new conversation). Part 2 is why the fixes work:
-  two authors in one string, escaping against binding, names that cannot
-  be bound, the shell's and ping's own parsers, allow-lists, taint
+  provisional), scanners on every push (history with `fetch-depth: 0`;
+  ask for an attack in a new conversation), and AI that finds and fixes flaws
+  (Copilot Autofix, DARPA's AI Cyber Challenge, Google's Big Sleep). Part 2 is why the fixes work:
+  two authors in one string, escaping against a placeholder, names that cannot
+  go in a placeholder, the shell's and ping's own parsers, allow-lists, taint
   tracking and what each scanner cannot see, no second channel for a
   prompt, a document that closes its delimiter, limiting a fooled model,
   and one install followed step by step. That spine is what the Security
-  questions in MCQ 2 test, so keep it. Every output on a slide is real: the
+  questions in MCQ 2 test, so keep it. The two comparison slides are there so the
+  lecture does not read as against AI assistance; they quote dated studies and
+  vendor figures, so recheck them when newer ones appear. Every output on a slide is real: the
   SQLite and shell runs, PyPI's answers, and the counts from sending the
   lab's prompts and document to hosted models. Rerun them if a claim, the
   lab or the models change.
