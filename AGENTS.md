@@ -264,7 +264,10 @@ figures (92% daily use / 29% trust / 48% always review / 1.7× defects /
 other. They are taught as **direction, not decimal points**, and the
 slide that quotes them says so. Do not add a statistic to a deck without
 that caveat on the same slide, and do not sharpen these into false
-precision.
+precision. Write the caveat in plain words that say where the numbers come
+from, for example "Treat these numbers as a rough guide. They come from one
+company's test tasks, not from code like yours." Never put the slogan
+"direction, not decimals" on a slide: students cannot tell what it means.
 
 ## Conventions (guaranteed repo-wide)
 
