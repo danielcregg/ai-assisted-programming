@@ -223,21 +223,25 @@ materially wrong by 2026.
   sections and six question slides for the room (four options, then a
   click that marks the right one on the slide; no try-it-now). Part 1 is
   what goes wrong: the benchmark rate and its condition (no security
-  instruction given), the four ordinary failures, people with and without an
+  instruction given), backed by a university study because the benchmark's
+  maker sells security testing, the four ordinary failures, people with and without an
   assistant on the same tasks (neither group safe by default), stating the requirement,
-  SQL injection and the placeholder fix, hallucinated packages and
-  slopsquatting (names repeat; the tool, not you, made the mistake; ask the
-  registry by bare name before installing), secrets (no default; rotate a
-  logged key), prompt injection (data, never instructions; defences are
-  provisional), scanners on every push (history with `fetch-depth: 0`;
+  SQL injection and the placeholder fix (binding), hallucinated packages and
+  slopsquatting (names repeat; ask the registry by the name alone before
+  installing), secrets (no default; rotate a logged key), prompt injection
+  (data, never instructions, inside delimiters; defences are provisional),
+  scanners on every push (static analysis; history with `fetch-depth: 0`;
   ask for an attack in a new conversation), and AI that finds and fixes flaws
   (Copilot Autofix, DARPA's AI Cyber Challenge, Google's Big Sleep). Part 2 is why the fixes work:
-  two authors in one string, escaping against a placeholder, names that cannot
-  go in a placeholder, the shell's and ping's own parsers, allow-lists, taint
-  tracking and what each scanner cannot see, no second channel for a
-  prompt, a document that closes its delimiter, limiting a fooled model,
-  and one install followed step by step. That spine is what the Security
-  questions in MCQ 2 test, so keep it. The two comparison slides are there so the
+  the database's parser cannot tell your text from the user's, escaping against
+  a placeholder's separate channel, names that cannot go in a placeholder, the
+  shell's and ping's own parsers, allow-lists, taint tracking and what each
+  scanner cannot see, a prompt with no separate channel (one sequence of tokens,
+  role labels and delimiters included), a document that fakes the closing
+  delimiter, limiting a fooled model, and one install followed step by step.
+  That spine is what the Security questions in MCQ 2 test, so keep it, and keep
+  their terms (parser, channel, delimiter, provisional, binding, static analysis,
+  hallucinated, rotate), each explained in plain words where it first appears. The two comparison slides are there so the
   lecture does not read as against AI assistance; they quote dated studies and
   vendor figures, so recheck them when newer ones appear. Every output on a slide is real: the
   SQLite and shell runs, PyPI's answers, and the counts from sending the
@@ -268,6 +272,10 @@ precision. Write the caveat in plain words that say where the numbers come
 from, for example "Treat these numbers as a rough guide. They come from one
 company's test tasks, not from code like yours." Never put the slogan
 "direction, not decimals" on a slide: students cannot tell what it means.
+Say who produced each figure and what they do. A company that sells security
+tools gains when code looks unsafe, so back its figure with an independent,
+peer-reviewed study where one exists: the Security deck pairs Veracode's
+benchmark with New York University's 2022 study of GitHub Copilot's code.
 
 ## Conventions (guaranteed repo-wide)
 
@@ -321,6 +329,14 @@ means is on the slide: a reader with only the slide in front of them,
 student or assistant, must be able to follow it. If a point needs
 explaining, explain it on the slide or give it a slide of its own; do not
 add a note.
+
+Write every slide in plain English for a student who missed the lecture and
+reads the deck alone. The title states the point in plain words. Every
+technical term is explained where it first appears, and never used before
+that. No slogans, riddles or clever metaphors that need the lecturer to decode
+them ("Direction, not decimals" and "The flaws are old; the volume of code is
+new" were both rewritten for that reason). Keep the terms an assessment uses,
+and explain them rather than dropping them.
 
 - Decks are SELF-CONTAINED and reusable: never reference other weeks or
   the module schedule, and never name an institution, a lecturer, a VLE
