@@ -479,8 +479,11 @@ why adding deny rules never finishes the job.
 Allowing a whole program (`shell(git)`, `shell(python)`) allows everything
 that program can do. Allow the subcommands you mean instead, and let
 everything else fall through to ASK. To ask the checker about one
-command, put it in quotes:
-`python policy/policy_check.py policy/my-policy.json "git log --oneline"`.
+command, put it in single quotes:
+`python policy/policy_check.py policy/my-policy.json 'git log --oneline'`.
+Single quotes, or a file with `--file`, matter as soon as the line holds
+quotes, `;`, `|` or `&&`: in double quotes or with no quotes, your own
+shell reads those characters first and can run part of the line for real.
 If the checker stops with a `JSONDecodeError`, your file is not valid
 JSON: usually there is a comma after the last rule in a list.
 
