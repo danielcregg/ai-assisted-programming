@@ -481,9 +481,11 @@ that program can do. Allow the subcommands you mean instead, and let
 everything else fall through to ASK. To ask the checker about one
 command, put it in single quotes:
 `python policy/policy_check.py policy/my-policy.json 'git log --oneline'`.
-Single quotes, or a file with `--file`, matter as soon as the line holds
-quotes, `;`, `|` or `&&`: in double quotes or with no quotes, your own
-shell reads those characters first and can run part of the line for real.
+Without quotes, your own shell reads any `;`, `|` or `&&` in the line
+first and runs part of the line for real. Double quotes are not enough
+when the line has a double quote of its own, because that quote ends
+them early. A line with a single quote in it goes in a file instead,
+checked with `--file`.
 If the checker stops with a `JSONDecodeError`, your file is not valid
 JSON: usually there is a comma after the last rule in a list.
 
