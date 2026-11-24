@@ -54,6 +54,7 @@ NEEDS_KEY = {
 PLACEHOLDER_TESTS = {
     "prompting": ["lab/tests/test_extract_domain.py", "lab/tests/test_orders.py"],
     "cli-agents": ["sample-app/test_stats.py"],
+    "vibe-coding": ["tests/test_todo.py"],
 }
 
 TEST_GLOBS = ("test_*.py", "*_test.py")
